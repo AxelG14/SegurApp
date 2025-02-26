@@ -54,6 +54,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.projectappmovil.ui.theme.ProjectAppMovilTheme
 import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.launch
 
@@ -224,11 +225,9 @@ fun registro(navController: NavController) {
 
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    // Botón de registro
                     Button(
                         onClick = {
                             agregarCliente(nombre, ciudad, direccion, email, contrasenia)
-                            navController.popBackStack()
                             coroutineScope.launch {
                                 snackbarHostState.showSnackbar("Registro exitoso")
                             }
@@ -242,7 +241,6 @@ fun registro(navController: NavController) {
 
                     Spacer(modifier = Modifier.height(40.dp))
 
-                    // Botón de inicio de sesión
                     Button(
                         onClick = {navController.popBackStack()},
                         modifier = Modifier

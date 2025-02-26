@@ -6,6 +6,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.projectappmovil.MainActivity
 import com.example.projectappmovil.password
+import com.example.projectappmovil.preview3
 import com.example.projectappmovil.previewLogin
 import com.example.projectappmovil.registro
 import com.example.projectappmovil.registro2
@@ -22,6 +23,9 @@ fun AppNavigation() {
         }
         composable(AppScreens.ForgotScreen.route) {
             password(navController)
+        }
+        composable(AppScreens.InicioScreen.route) {
+            preview3()
         }
 
 

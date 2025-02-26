@@ -75,13 +75,12 @@ fun titleInicio(){
 }
 
 @Composable
-fun close(){
+fun notification(){
     IconButton(
         onClick = {},
         colors = IconButtonDefaults.iconButtonColors(
             contentColor = MaterialTheme.colorScheme.primary),
-
-
+        modifier = Modifier.padding(top = 10.dp)
         ) {
         Icon(
             imageVector = Icons.Default.Notifications, contentDescription = null,
@@ -143,12 +142,12 @@ fun navigationBar(){
 fun preview3(){
     Row (
         modifier = Modifier.fillMaxSize().padding(top = 20.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.SpaceBetween,
     )
     {
         image()
         titleInicio()
-        close()
+        notification()
     }
     Column (
         modifier = Modifier.fillMaxSize(),
