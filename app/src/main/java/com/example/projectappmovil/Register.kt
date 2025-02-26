@@ -91,17 +91,6 @@ fun agregarAdministrador(){
         }
 }
 
-
-@Composable
-fun title(){
-    Text(
-        text = "REGISTRO USUARIO",
-        color = MaterialTheme.colorScheme.primary,
-        fontSize = 26.sp,
-        fontWeight = FontWeight.Bold
-    )
-}
-
 @Composable
 fun registro(navController: NavController) {
     var nombre by remember { mutableStateOf("") }

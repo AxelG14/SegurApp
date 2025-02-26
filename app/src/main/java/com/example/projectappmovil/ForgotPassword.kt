@@ -30,10 +30,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 
-@Preview
+
 @Composable
-fun password(){
+fun password(navController: NavController){
     Column (
         modifier = Modifier
             .fillMaxSize()
@@ -70,7 +71,7 @@ fun password(){
             onValueChange = {newPassword -> password = newPassword},
             label = { Text("NEW PASSWORD")},
             modifier = Modifier
-                .padding(top = 50.dp)
+                .padding(top = 40.dp)
                 .fillMaxWidth(0.9f),
             leadingIcon = {
                 Icon(imageVector = Icons.Default.Lock, contentDescription = null)}
@@ -86,10 +87,10 @@ fun password(){
             Text(text = "CONFIRMAR")
         }
         Button(
-            onClick = { /*TODO*/ },
+            onClick = { navController.popBackStack() },
             modifier = Modifier
                 .padding(top = 40.dp)
-                .fillMaxWidth(0.8f),
+                .fillMaxWidth(0.7f),
             colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary)
                 
         ) {

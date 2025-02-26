@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -45,7 +46,8 @@ fun titulo(){
         text = "Bienvenidos Apps Moviles",
         color = MaterialTheme.colorScheme.primary,
         fontSize = 30.sp,
-        fontWeight = FontWeight.Bold
+        fontWeight = FontWeight.Bold,
+        textAlign = TextAlign.Center
     )
 }
 
@@ -70,13 +72,13 @@ fun textField(){
 }
 
 @Composable
-fun olvideContrasenia(){
+fun olvideContrasenia(navController: NavController){
     Text(
         text = "¿Olvidaste tu contraseña?",
         color = MaterialTheme.colorScheme.primary,
         fontSize = 15.sp,
         fontWeight = FontWeight.Bold,
-        modifier = Modifier.clickable() {
+        modifier = Modifier.clickable() {navController.navigate(route = AppScreens.ForgotScreen.route)
         }
     )
 }
@@ -85,7 +87,7 @@ fun olvideContrasenia(){
 fun buttons(navController: NavController){
     Button(
         onClick = {},
-        modifier = Modifier.size(height = 60.dp, width = 250.dp)
+        modifier = Modifier.size(height = 50.dp, width = 250.dp)
     ) {
         Text("INICIAR SESION")
     }
@@ -94,7 +96,7 @@ fun buttons(navController: NavController){
 
     Button(
         onClick = {navController.navigate(route = AppScreens.RegisterScreen.route)},
-        modifier = Modifier.size(height = 60.dp, width = 250.dp),
+        modifier = Modifier.size(height = 50.dp, width = 250.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.secondary
         )
@@ -108,16 +110,15 @@ fun previewLogin(navController: NavController){
     Column (
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
-
     ) {
         Spacer(modifier = Modifier.height(60.dp))
         imageLogin()
         titulo()
-        Spacer(modifier = Modifier.height(80.dp))
+        Spacer(modifier = Modifier.height(60.dp))
         textField()
         Spacer(modifier = Modifier.height(20.dp))
-        olvideContrasenia()
-        Spacer(modifier = Modifier.height(100.dp))
+        olvideContrasenia(navController)
+        Spacer(modifier = Modifier.height(40.dp))
         buttons(navController)
     }
 
