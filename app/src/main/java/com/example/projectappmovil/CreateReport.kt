@@ -1,15 +1,23 @@
 package com.example.projectappmovil
-
+import androidx.activity.compose.rememberLauncherForActivityResult
+import android.net.Uri
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -24,10 +32,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.rememberAsyncImagePainter
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.FirebaseStorage
+import java.util.UUID
 
 @Preview
 @Composable
@@ -66,7 +80,9 @@ fun createReport(){
                 .padding(20.dp)
                 .fillMaxSize()
                 .padding(innerPadding),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceEvenly
+
         ) {
             Text(
                 text = "CREAR REPORTE",
@@ -109,10 +125,98 @@ fun createReport(){
                 label = { Text("ubicacion") }
             )
 
+            Spacer(modifier = Modifier.height(30.dp))
 
+            var imageUri by remember { mutableStateOf<Uri?>(null) }
+            val context = LocalContext.current
 
+            val launcher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.GetContent(),
+                onResult = { uri: Uri? ->
+                    imageUri = uri
+                }
+            )
+            if (imageUri != null) {
+
+                Image(
+                    painter = rememberAsyncImagePainter(model = imageUri),
+                    contentDescription = null,
+                    modifier = Modifier.size(100.dp)
+                )
+            } else {
+                Text("No image selected")
+            }
+
+            Button(
+                onClick = { launcher.launch("image/*") },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.secondary)
+            ) {
+                Text("Select Image from Gallery")
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Button(
+                onClick = {
+                    imageUri?.let { uri ->
+                        saveReportImageToFirebaseStorage(
+                            titulo,
+                            categoria,
+                            descripcion,
+                            ubicacion,
+                            uri
+                        )
+                    }
+                },
+                    modifier = Modifier
+                    .height(40.dp)
+                    .fillMaxWidth(0.9f)
+            ) {
+                Text(text = "CREAR REPORTE")
+            }
         }
-
     }
-
 }
+
+fun saveReport(titulo: String, categoria: String, descripcion: String,
+               ubicacion: String, imageUrl: String){
+    val db = Firebase.firestore
+    val report = hashMapOf(
+        "titulo" to titulo,
+        "categoria" to categoria,
+        "descripcion" to descripcion,
+        "ubicacion" to ubicacion,
+        "imageUrl" to imageUrl
+    )
+    db.collection("reportes")
+        .add(report)
+        .addOnSuccessListener { documentReference ->
+            println("DocumentSnapshot written with ID: ${documentReference.id}")
+        }
+}
+
+fun saveReportImageToFirebaseStorage(
+    titulo: String,
+    categoria: String,
+    descripcion: String,
+    ubicacion: String,
+    imageUri: Uri
+) {
+    val storage = FirebaseStorage.getInstance()
+    val storageRef = storage.reference
+    val imageRef = storageRef.child("images/${UUID.randomUUID()}.jpg")
+
+    val uploadTask = imageRef.putFile(imageUri)
+
+    uploadTask.addOnSuccessListener {
+        // La imagen se subió correctamente
+        imageRef.downloadUrl.addOnSuccessListener { uri ->
+            val imageUrl = uri.toString()
+            saveReport(titulo, categoria, descripcion, ubicacion ,imageUrl) // Guarda la URL en Firestore
+        }
+    }.addOnFailureListener { exception ->
+        println("Error uploading image: ${exception.message}")
+    }
+}
+

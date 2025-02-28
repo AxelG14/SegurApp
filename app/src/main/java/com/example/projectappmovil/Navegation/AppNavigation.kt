@@ -10,7 +10,6 @@ import com.example.projectappmovil.inicio2
 import com.example.projectappmovil.password
 import com.example.projectappmovil.previewLogin
 import com.example.projectappmovil.registro
-import com.example.projectappmovil.registro2
 
 @Composable
 fun AppNavigation() {
@@ -20,7 +19,7 @@ fun AppNavigation() {
             previewLogin(navController)
         }
         composable(AppScreens.RegisterScreen.route) {
-            registro2(navController)
+            registro(navController)
         }
         composable(AppScreens.ForgotScreen.route) {
             password(navController)

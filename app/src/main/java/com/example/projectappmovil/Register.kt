@@ -52,24 +52,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.projectappmovil.Controller.RegisterController
 import com.example.projectappmovil.ui.theme.ProjectAppMovilTheme
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.launch
-
-//class Register : ComponentActivity() {
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        enableEdgeToEdge()
-//        setContent {
-//            ProjectAppMovilTheme {
-//                preview2()
-//
-//            }
-//        }
-//    }
-//}
 
 //Agregar Administradores
 
@@ -225,9 +213,10 @@ fun registro(navController: NavController) {
 
                     Spacer(modifier = Modifier.height(24.dp))
 
+                    val RegisterController1 = RegisterController()
                     Button(
                         onClick = {
-                            agregarCliente(nombre, ciudad, direccion, email, contrasenia)
+                            RegisterController1.agregarCliente(nombre, ciudad, direccion, email, contrasenia)
                             coroutineScope.launch {
                                 snackbarHostState.showSnackbar("Registro exitoso")
                             }
@@ -258,23 +247,5 @@ fun registro(navController: NavController) {
     )
 }
 
-fun agregarCliente(nombre: String, ciudad: String, direccion: String, email: String, contrasenia: String){
-    val db = Firebase.firestore
-    val cliente = hashMapOf(
-        "nombre" to nombre,
-        "ciudad" to ciudad,
-        "direccion" to direccion,
-        "email" to email,
-        "contrasenia" to contrasenia
-    )
-    db.collection("clientes")
-        .add(cliente)
-        .addOnSuccessListener { documentReference ->
-            println("DocumentSnapshot written with ID: ${documentReference.id}")
-        }
-}
 
-@Composable
-fun registro2(navController: NavController){
-    registro(navController)
-}
+
