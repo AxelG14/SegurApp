@@ -5,7 +5,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.projectappmovil.Inicio
-import com.example.projectappmovil.createReport
+import com.example.projectappmovil.CreateReport
+import com.example.projectappmovil.Reports1
 import com.example.projectappmovil.password
 import com.example.projectappmovil.previewLogin
 import com.example.projectappmovil.registro
@@ -27,7 +28,10 @@ fun AppNavigation() {
             Inicio(navController)
         }
         composable(AppScreens.CreateReportScreen.route) {
-            createReport()
+            CreateReport()
+        }
+        composable(AppScreens.ReportScreen.route) {
+            Reports1()
         }
 
 

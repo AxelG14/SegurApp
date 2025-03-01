@@ -6,4 +6,5 @@ open class AppScreens(val route: String) {
     object ForgotScreen : AppScreens("forgot_screen")
     object InicioScreen : AppScreens("inicio_screen")
     object CreateReportScreen : AppScreens("createReport_screen")
+    object ReportScreen : AppScreens("report_screen")
 }

@@ -32,7 +32,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -41,9 +40,9 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.projectappmovil.controller.CreateReportController
 import com.google.firebase.auth.FirebaseAuth
 
-@Preview
+
 @Composable
-fun createReport(){
+fun CreateReport(){
     Scaffold (
         bottomBar = {
             NavigationBar { NavigationBarItem(
@@ -126,7 +125,7 @@ fun createReport(){
             Spacer(modifier = Modifier.height(30.dp))
 
             var imageUri by remember { mutableStateOf<Uri?>(null) }
-            val context = LocalContext.current
+            //val context = LocalContext.current
 
             val launcher = rememberLauncherForActivityResult(
                 contract = ActivityResultContracts.GetContent(),

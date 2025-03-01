@@ -37,24 +37,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.projectappmovil.navegation.AppScreens
-import com.example.projectappmovil.ui.theme.ProjectAppMovilTheme
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-
-class Inicio : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            ProjectAppMovilTheme {
-            }
-        }
-    }
-}
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -71,7 +59,7 @@ fun Inicio(navController: NavController){
                     label = { Text("MENU") }
                 )
                 NavigationBarItem(
-                    onClick = {},
+                    onClick = {navController.navigate(route = AppScreens.ReportScreen.route)},
                     selected = false,
                     icon = { Icon(imageVector = Icons.Default.Place, contentDescription = null) },
                     label = { Text("REPORTS") }
@@ -93,7 +81,9 @@ fun Inicio(navController: NavController){
 
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text("$email")},
+                title = { Text("$email",
+                    fontSize = 20.sp
+                )},
                 navigationIcon = {
                     Image(
                         painter = painterResource(R.drawable.vueloenavion),
@@ -103,7 +93,7 @@ fun Inicio(navController: NavController){
                 },
                 actions = {
                     IconButton(
-                        onClick = { /* Aquí va la acción al hacer clic */ },
+                        onClick = { },
                         colors = IconButtonDefaults.iconButtonColors(
                             contentColor = Color.Black,
                             containerColor = Color.White
