@@ -1,4 +1,4 @@
-package com.example.projectappmovil.Controller
+package com.example.projectappmovil.controller
 
 import android.net.Uri
 import com.google.firebase.firestore.ktx.firestore
@@ -7,7 +7,8 @@ import com.google.firebase.storage.FirebaseStorage
 import java.util.UUID
 
 class CreateReportController {
-    fun saveReport(titulo: String, categoria: String, descripcion: String,
+
+    fun saveReport(userId: String, titulo: String, categoria: String, descripcion: String,
                    ubicacion: String, imageUrl: String){
         val db = Firebase.firestore
         val report = hashMapOf(
@@ -17,7 +18,9 @@ class CreateReportController {
             "ubicacion" to ubicacion,
             "imageUrl" to imageUrl
         )
-        db.collection("reportes")
+        db.collection("clientes")
+            .document(userId)
+            .collection("reportes")
             .add(report)
             .addOnSuccessListener { documentReference ->
                 println("DocumentSnapshot written with ID: ${documentReference.id}")
@@ -25,6 +28,7 @@ class CreateReportController {
     }
 
     fun saveReportImageToFirebaseStorage(
+        userId: String,
         titulo: String,
         categoria: String,
         descripcion: String,
@@ -33,7 +37,7 @@ class CreateReportController {
     ) {
         val storage = FirebaseStorage.getInstance()
         val storageRef = storage.reference
-        val imageRef = storageRef.child("images/${UUID.randomUUID()}.jpg")
+        val imageRef = storageRef.child("/users/$userId/images/${UUID.randomUUID()}.jpg")
 
         val uploadTask = imageRef.putFile(imageUri)
 
@@ -41,7 +45,7 @@ class CreateReportController {
             // La imagen se subió correctamente
             imageRef.downloadUrl.addOnSuccessListener { uri ->
                 val imageUrl = uri.toString()
-                saveReport(titulo, categoria, descripcion, ubicacion ,imageUrl) // Guarda la URL en Firestore
+                saveReport(userId, titulo, categoria, descripcion, ubicacion ,imageUrl)
             }
         }.addOnFailureListener { exception ->
             println("Error uploading image: ${exception.message}")

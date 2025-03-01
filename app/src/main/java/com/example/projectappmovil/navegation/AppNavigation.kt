@@ -1,12 +1,11 @@
-package com.example.projectappmovil.Navegation
+package com.example.projectappmovil.navegation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.projectappmovil.MainActivity
+import com.example.projectappmovil.Inicio
 import com.example.projectappmovil.createReport
-import com.example.projectappmovil.inicio2
 import com.example.projectappmovil.password
 import com.example.projectappmovil.previewLogin
 import com.example.projectappmovil.registro
@@ -25,7 +24,7 @@ fun AppNavigation() {
             password(navController)
         }
         composable(AppScreens.InicioScreen.route) {
-            inicio2(navController)
+            Inicio(navController)
         }
         composable(AppScreens.CreateReportScreen.route) {
             createReport()

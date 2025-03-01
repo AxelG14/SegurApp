@@ -6,55 +6,43 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Place
-import androidx.compose.material.icons.materialIcon
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.LeadingIconTab
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.projectappmovil.Navegation.AppScreens
+import com.example.projectappmovil.navegation.AppScreens
 import com.example.projectappmovil.ui.theme.ProjectAppMovilTheme
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
 
 class Inicio : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -70,7 +58,7 @@ class Inicio : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun inicio2(navController: NavController){
+fun Inicio(navController: NavController){
     val auth: FirebaseAuth = Firebase.auth
     val email = auth.currentUser?.email
     Scaffold (
@@ -80,27 +68,26 @@ fun inicio2(navController: NavController){
                     onClick = {},
                     selected = true,
                     icon = { Icon(imageVector = Icons.Default.Home, contentDescription = null) },
-                    label = { Text("INICIO") }
+                    label = { Text("MENU") }
                 )
                 NavigationBarItem(
                     onClick = {},
                     selected = false,
                     icon = { Icon(imageVector = Icons.Default.Place, contentDescription = null) },
-                    label = { Text("REPORTES") }
+                    label = { Text("REPORTS") }
                 )
                 NavigationBarItem(
                     onClick = {},
                     selected = false,
                     icon = { Icon(imageVector = Icons.Default.Create, contentDescription = null) },
-                    label = { Text("MI REPORT") }
+                    label = { Text("MINE") }
                 )
                 NavigationBarItem(
                     onClick = {},
                     selected = false,
-                    icon = { Icon(imageVector = Icons.Default.Person, contentDescription = null) },
-                    label = { Text("MI PERFIL") }
+                    icon = { Icon(imageVector = Icons.Default.Notifications, contentDescription = null) },
+                    label = { Text("NOTIFI") }
                 )
-
             }
         },
 
@@ -155,28 +142,3 @@ fun inicio2(navController: NavController){
         }
     )
 }
-
-
-//@Composable
-//fun inicio(navController: NavController){
-//    Row (
-//        modifier = Modifier.fillMaxSize().padding(top = 20.dp),
-//        horizontalArrangement = Arrangement.SpaceBetween,
-//    )
-//    {
-//        image()
-//        titleInicio()
-//        notification()
-//    }
-//    Column (
-//        modifier = Modifier.fillMaxSize(),
-//        horizontalAlignment = Alignment.CenterHorizontally
-//    ) {
-//        Spacer(modifier = Modifier.height(80.dp))
-//        line()
-//        Spacer(modifier = Modifier.height(450.dp))
-//        btnCreateReport(navController)
-//        Spacer(modifier = Modifier.height(20.dp))
-//        navigationBar()
-//    }
-//}

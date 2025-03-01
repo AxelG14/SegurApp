@@ -14,7 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -38,11 +38,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
-import com.example.projectappmovil.Controller.CreateReportController
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.FirebaseStorage
-import java.util.UUID
+import com.example.projectappmovil.controller.CreateReportController
+import com.google.firebase.auth.FirebaseAuth
 
 @Preview
 @Composable
@@ -51,27 +48,27 @@ fun createReport(){
         bottomBar = {
             NavigationBar { NavigationBarItem(
                 onClick = {},
-                selected = true,
+                selected = false,
                 icon = { Icon(imageVector = Icons.Default.Home, contentDescription = null) },
-                label = { Text("INICIO") }
+                label = { Text("MENU") }
             )
                 NavigationBarItem(
                     onClick = {},
                     selected = false,
                     icon = { Icon(imageVector = Icons.Default.Place, contentDescription = null) },
-                    label = { Text("REPORTES") }
+                    label = { Text("REPORTS") }
                 )
                 NavigationBarItem(
                     onClick = {},
                     selected = false,
                     icon = { Icon(imageVector = Icons.Default.Create, contentDescription = null) },
-                    label = { Text("MI REPORT") }
+                    label = { Text("MINE") }
                 )
                 NavigationBarItem(
                     onClick = {},
                     selected = false,
-                    icon = { Icon(imageVector = Icons.Default.Person, contentDescription = null) },
-                    label = { Text("MI PERFIL") }
+                    icon = { Icon(imageVector = Icons.Default.Notifications, contentDescription = null) },
+                    label = { Text("NOTIF") }
                 )
             }
         }
@@ -142,7 +139,7 @@ fun createReport(){
                 Image(
                     painter = rememberAsyncImagePainter(model = imageUri),
                     contentDescription = null,
-                    modifier = Modifier.size(100.dp)
+                    modifier = Modifier.size(120.dp)
                 )
             } else {
                 Text("No image selected")
@@ -159,16 +156,22 @@ fun createReport(){
             Spacer(modifier = Modifier.height(10.dp))
 
             val createReportController = CreateReportController()
+            val currentUser = FirebaseAuth.getInstance()
+            val userId = currentUser.uid
+
             Button(
                 onClick = {
-                    imageUri?.let { uri ->
-                        createReportController.saveReportImageToFirebaseStorage(
-                            titulo,
-                            categoria,
-                            descripcion,
-                            ubicacion,
-                            uri
-                        )
+                    if (userId != null && imageUri != null) {
+                        imageUri?.let { uri ->
+                            createReportController.saveReportImageToFirebaseStorage(
+                                userId,
+                                titulo,
+                                categoria,
+                                descripcion,
+                                ubicacion,
+                                uri
+                            )
+                        }
                     }
                 },
                     modifier = Modifier

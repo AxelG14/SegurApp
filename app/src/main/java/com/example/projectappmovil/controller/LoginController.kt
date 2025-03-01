@@ -1,7 +1,7 @@
-package com.example.projectappmovil.Controller
+package com.example.projectappmovil.controller
 
 import androidx.navigation.NavController
-import com.example.projectappmovil.Navegation.AppScreens
+import com.example.projectappmovil.navegation.AppScreens
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
