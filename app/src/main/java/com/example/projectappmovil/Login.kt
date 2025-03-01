@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
+import com.example.projectappmovil.Controller.LoginController
 import com.example.projectappmovil.Navegation.AppScreens
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -97,22 +98,25 @@ fun body(navController: NavController){
 
         var showErrorDialog by remember { mutableStateOf(false) }
         var showErrorDialog2 by remember { mutableStateOf(false) }
+        var loginController = LoginController()
         Button(
             onClick = {
                 if (email.isBlank() || password.isBlank()) {
                     showErrorDialog = true
                 } else {
-                    findUserByEmailAndPassword(
-                        collectionName = "clientes",
-                        email = email,
-                        password = password
-                    ) { userFound ->
-                        if (userFound) {
-                            navController.navigate(route = AppScreens.InicioScreen.route)
-                        } else {
-                            showErrorDialog2 = true
-                        }
-                    }
+                    loginController.iniciarSesion(email, password,navController)
+
+//                    findUserByEmailAndPassword(
+//                        collectionName = "clientes",
+//                        email = email,
+//                        password = password
+//                    ) { userFound ->
+//                        if (userFound) {
+//                            navController.navigate(route = AppScreens.InicioScreen.route)
+//                        } else {
+//                            showErrorDialog2 = true
+//                        }
+//                    }
                 }
             },
 
