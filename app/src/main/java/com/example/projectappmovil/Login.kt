@@ -106,17 +106,6 @@ fun body(navController: NavController){
                 } else {
                     loginController.iniciarSesion(email, password,navController)
 
-//                    findUserByEmailAndPassword(
-//                        collectionName = "clientes",
-//                        email = email,
-//                        password = password
-//                    ) { userFound ->
-//                        if (userFound) {
-//                            navController.navigate(route = AppScreens.InicioScreen.route)
-//                        } else {
-//                            showErrorDialog2 = true
-//                        }
-//                    }
                 }
             },
 
@@ -140,12 +129,12 @@ fun body(navController: NavController){
         }
         if (showErrorDialog) {
             AlertDialog(
-                onDismissRequest = { showErrorDialog = false }, // Cerrar el diálogo
+                onDismissRequest = { showErrorDialog = false },
                 title = { Text("ERROR") },
-                text = { Text("DEBES DE LLENAR TODOS LOS CAMPOS") },
+                text = { Text("Debes de llenar todos los campos") },
                 confirmButton = {
                     Button(
-                        onClick = { showErrorDialog = false } // Cerrar el diálogo
+                        onClick = { showErrorDialog = false }
                     ) {
                         Text("Aceptar")
                     }
@@ -155,12 +144,12 @@ fun body(navController: NavController){
 
         if (showErrorDialog2) {
             AlertDialog(
-                onDismissRequest = { showErrorDialog2 = false }, // Cerrar el diálogo
+                onDismissRequest = { showErrorDialog2 = false },
                 title = { Text("ERROR") },
                 text = { Text("NO SE ENCONTRO EL USUARIO") },
                 confirmButton = {
                     Button(
-                        onClick = { showErrorDialog2 = false } // Cerrar el diálogo
+                        onClick = { showErrorDialog2 = false }
                     ) {
                         Text("Aceptar")
                     }
@@ -184,28 +173,7 @@ fun previewLogin(navController: NavController){
     }
 }
 
-fun findUserByEmailAndPassword(
-    collectionName: String,
-    email: String,
-    password: String,
-    onResult: (Boolean) -> Unit
-) {
-    val db = Firebase.firestore
 
-    db.collection(collectionName)
-        .whereEqualTo("email", email) // Busca el campo "email"
-        .whereEqualTo("contrasenia", password) // Busca el campo "password"
-        .limit(1) // Limita la búsqueda a un solo documento
-        .get()
-        .addOnSuccessListener { querySnapshot ->
-            // Si se encuentra un documento, devuelve `true`
-            onResult(!querySnapshot.isEmpty)
-        }
-        .addOnFailureListener { exception ->
-            println("Error buscando usuario: ${exception.message}")
-            onResult(false) // Devuelve `false` en caso de error
-        }
-}
 
 
 

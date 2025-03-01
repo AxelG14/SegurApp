@@ -25,6 +25,8 @@ import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.materialIcon
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonColors
@@ -35,6 +37,8 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarColors
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,6 +51,9 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.projectappmovil.Navegation.AppScreens
 import com.example.projectappmovil.ui.theme.ProjectAppMovilTheme
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
 
 class Inicio : ComponentActivity() {
@@ -61,8 +68,11 @@ class Inicio : ComponentActivity() {
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun inicio2(navController: NavController){
+    val auth: FirebaseAuth = Firebase.auth
+    val email = auth.currentUser?.email
     Scaffold (
         bottomBar = {
             NavigationBar {
@@ -93,56 +103,49 @@ fun inicio2(navController: NavController){
 
             }
         },
-        content = { innerPadding ->
-            Text(
-                text = "",
-                modifier = Modifier.padding(innerPadding)
+
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = { Text("$email")},
+                navigationIcon = {
+                    Image(
+                        painter = painterResource(R.drawable.vueloenavion),
+                        contentDescription = null,
+                        modifier = Modifier.size(50.dp)
+                    )
+                },
+                actions = {
+                    IconButton(
+                        onClick = { /* Aquí va la acción al hacer clic */ },
+                        colors = IconButtonDefaults.iconButtonColors(
+                            contentColor = Color.Black,
+                            containerColor = Color.White
+                        )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Person,
+                            contentDescription = null,
+                            modifier = Modifier.size(40.dp)
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.DarkGray)
+
             )
-            Row (
-                modifier = Modifier
-                    .padding(20.dp)
-                    .fillMaxSize()
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Image(
-                    painter = painterResource(R.drawable.vueloenavion),
-                    contentDescription = null,
-                    modifier = Modifier.size(70.dp)
-                )
-                Text(
-                    text = "BIENVENIDO",
-                    fontSize = 24.sp,
-                    modifier = Modifier.padding(20.dp)
-                )
-                IconButton(
-                    onClick = {},
-                    colors = IconButtonDefaults.iconButtonColors(
-                        contentColor = MaterialTheme.colorScheme.primary),
-                    modifier = Modifier.padding(top = 10.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Notifications, contentDescription = null,
-                        modifier = Modifier.size(50.dp))
-                }
-            }
+        },
+        content = { innerPadding ->
             Column (
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally
             )   {
 
-                Text("_________________________________________",
-                    fontSize = 20.sp,
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(top = 80.dp)
-                )
-
-                Spacer(modifier = Modifier.height(500.dp))
+                Spacer(modifier = Modifier.height(460.dp))
                 Button(
                     onClick = {navController.navigate(route = AppScreens.CreateReportScreen.route)},
                     colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary),
                     modifier = Modifier
-                        .padding(bottom = 100.dp)
                         .size(height = 50.dp, width = 300.dp),
                     border = BorderStroke(1.dp, Color.Blue)
                 ) {

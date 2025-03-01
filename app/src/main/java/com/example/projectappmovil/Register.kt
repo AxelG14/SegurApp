@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Place
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -81,8 +82,8 @@ fun registro(navController: NavController) {
             Snackbar(
                 modifier = Modifier
                     .clip(RoundedCornerShape(12.dp))
-                    .fillMaxWidth(0.7f),
-                containerColor = MaterialTheme.colorScheme.primary,
+                    .fillMaxWidth(0.8f),
+                containerColor = MaterialTheme.colorScheme.secondary,
                 content = {
                     Text(
                         text = "SE HA REGISTRADO CORRECTAMENTE",
@@ -199,8 +200,12 @@ fun registro(navController: NavController) {
                     Spacer(modifier = Modifier.height(24.dp))
 
                     val registerController1 = RegisterController()
+                    var showErrorDialog by remember { mutableStateOf(false) }
                     Button(
-                        onClick = {
+                        onClick = { if (nombre.isBlank() || ciudad.isBlank() || direccion.isBlank()
+                            || email.isBlank() || contrasenia.isBlank()){
+                            showErrorDialog = true
+                        }
                             registerController1.agregarClienteAuth(email, contrasenia)
                             registerController1.agregarClienteFirestore(nombre, ciudad, direccion, email, contrasenia)
                             coroutineScope.launch {
@@ -219,13 +224,27 @@ fun registro(navController: NavController) {
                     Button(
                         onClick = {navController.popBackStack()},
                         modifier = Modifier
-                            .fillMaxWidth(0.8f) // 80% del ancho de la pantalla
+                            .fillMaxWidth(0.8f)
                             .height(48.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.secondary
                         )
                     ) {
                         Text("INICIAR SESION")
+                    }
+                    if (showErrorDialog) {
+                        AlertDialog(
+                            onDismissRequest = { showErrorDialog = false },
+                            title = { Text("ERROR") },
+                            text = { Text("Debes de llenar todos los campos") },
+                            confirmButton = {
+                                Button(
+                                    onClick = { showErrorDialog = false }
+                                ) {
+                                    Text("Aceptar")
+                                }
+                            }
+                        )
                     }
                 }
             }
