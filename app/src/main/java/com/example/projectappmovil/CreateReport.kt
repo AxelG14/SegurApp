@@ -16,8 +16,13 @@ import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Place
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -33,7 +38,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
@@ -41,6 +45,7 @@ import com.example.projectappmovil.controller.CreateReportController
 import com.google.firebase.auth.FirebaseAuth
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateReport(){
     Scaffold (
@@ -67,7 +72,7 @@ fun CreateReport(){
                     onClick = {},
                     selected = false,
                     icon = { Icon(imageVector = Icons.Default.Notifications, contentDescription = null) },
-                    label = { Text("NOTIF") }
+                    label = { Text("PROFILE") }
                 )
             }
         }
@@ -89,27 +94,58 @@ fun CreateReport(){
             )
 
             var titulo by remember { mutableStateOf("") }
+            val categorias =
+                listOf("Seguridad", "Emergencias", "Infraestructura", "Mascotas", "Comunidad")
             var categoria by remember { mutableStateOf("") }
+            var expanded by remember { mutableStateOf(false) }
             var descripcion by remember { mutableStateOf("") }
             var ubicacion by remember { mutableStateOf("") }
+
             TextField(
                 value = titulo,
                 onValueChange = { newTitulo ->
-                    titulo = newTitulo },
+                    titulo = newTitulo
+                },
                 modifier = Modifier.fillMaxWidth(0.9f),
                 label = { Text("Titulo") }
             )
-            TextField(
-                value = categoria,
-                onValueChange = { newCategoria ->
-                    categoria = newCategoria },
-                modifier = Modifier.fillMaxWidth(0.9f),
-                label = { Text("Categoria") }
-            )
+
+            ExposedDropdownMenuBox(
+                expanded = expanded,
+                onExpandedChange = { expanded = !expanded },
+                modifier = Modifier.fillMaxWidth(0.9f).padding(vertical = 8.dp)
+            ) {
+                TextField(
+                    value = categoria,
+                    onValueChange = { },
+                    readOnly = true, // Hace que el campo sea de solo lectura
+                    label = { Text("Categoria") },
+                    trailingIcon = {
+                        ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                    },
+                    modifier = Modifier.menuAnchor()
+                )
+
+                ExposedDropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false }
+                ) {
+                    categorias.forEach { categoriaItem ->
+                        DropdownMenuItem(
+                            text = { Text(categoriaItem) },
+                            onClick = {
+                                categoria = categoriaItem
+                                expanded = false
+                            }
+                        )
+                    }
+                }
+            }
             TextField(
                 value = descripcion,
                 onValueChange = { newDescripcion ->
-                    descripcion = newDescripcion },
+                    descripcion = newDescripcion
+                },
                 modifier = Modifier.fillMaxWidth(0.9f),
                 label = { Text("Descripcion") }
             )
@@ -117,7 +153,8 @@ fun CreateReport(){
             TextField(
                 value = ubicacion,
                 onValueChange = { newUbicacion ->
-                    ubicacion = newUbicacion },
+                    ubicacion = newUbicacion
+                },
                 modifier = Modifier.fillMaxWidth(0.9f),
                 label = { Text("ubicacion") }
             )
@@ -147,7 +184,8 @@ fun CreateReport(){
             Button(
                 onClick = { launcher.launch("image/*") },
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.secondary)
+                    containerColor = MaterialTheme.colorScheme.secondary
+                )
             ) {
                 Text("Select Image from Gallery")
             }
@@ -157,31 +195,78 @@ fun CreateReport(){
             val createReportController = CreateReportController()
             val currentUser = FirebaseAuth.getInstance()
             val userId = currentUser.uid
+            var showDialog by remember { mutableStateOf(false) }
+            var showDialog2 by remember { mutableStateOf(false) }
 
             Button(
                 onClick = {
-                    if (userId != null && imageUri != null) {
-                        imageUri?.let { uri ->
-                            createReportController.saveReportImageToFirebaseStorage(
-                                userId,
-                                titulo,
-                                categoria,
-                                descripcion,
-                                ubicacion,
-                                uri
-                            )
+                    if (titulo.isEmpty() || categoria.isEmpty() || descripcion.isEmpty() || ubicacion.isEmpty()) {
+                        showDialog = true
+
+                    } else {
+                        if (userId != null && imageUri != null) {
+                            imageUri?.let { uri ->
+                                createReportController.saveReportImageToFirebaseStorage(
+                                    userId,
+                                    titulo,
+                                    categoria,
+                                    descripcion,
+                                    ubicacion,
+                                    uri
+                                )
+                                showDialog2 = true
+                                titulo = ""
+                                categoria = ""
+                                descripcion = ""
+                                ubicacion = ""
+                                imageUri = null
+                            }
                         }
                     }
                 },
-                    modifier = Modifier
+                modifier = Modifier
                     .height(40.dp)
                     .fillMaxWidth(0.9f)
             ) {
                 Text(text = "CREAR REPORTE")
+
+            }
+
+            if (showDialog) {
+                AlertDialog(
+                    onDismissRequest = { showDialog = false },
+                    title = { Text("Error") },
+                    text = { Text("Debe llenar todos los campos!") },
+                    confirmButton = {
+                        Button(
+                            onClick = { showDialog = false }
+                        ) {
+                            Text("Aceptar")
+                        }
+                    }
+                )
+            }
+            if (showDialog2) {
+                AlertDialog(
+                    onDismissRequest = { showDialog = false },
+                    title = { Text("CORRECTO") },
+                    text = { Text("Se creó el reporte correctamente!") },
+                    confirmButton = {
+                        Button(
+                            onClick = { showDialog = false }
+                        ) {
+                            Text("Aceptar")
+                        }
+                    }
+                )
             }
         }
     }
 }
+
+
+
+
 
 
 

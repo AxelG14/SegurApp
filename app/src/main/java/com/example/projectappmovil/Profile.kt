@@ -3,7 +3,6 @@ package com.example.projectappmovil
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -20,8 +19,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -43,12 +40,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.projectappmovil.navegation.AppScreens
 
 @Preview
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Perfil(){
+fun Profile(){
     Scaffold (
         topBar = {
             CenterAlignedTopAppBar(
@@ -82,7 +78,7 @@ fun Perfil(){
             NavigationBar {
                 NavigationBarItem(
                     onClick = {},
-                    selected = true,
+                    selected = false,
                     icon = { Icon(imageVector = Icons.Default.Home, contentDescription = null) },
                     label = { Text("MENU") }
                 )
@@ -100,7 +96,7 @@ fun Perfil(){
                 )
                 NavigationBarItem(
                     onClick = {},
-                    selected = false,
+                    selected = true,
                     icon = { Icon(imageVector = Icons.Default.Person, contentDescription = null) },
                     label = { Text("PROFILE") }
                 )

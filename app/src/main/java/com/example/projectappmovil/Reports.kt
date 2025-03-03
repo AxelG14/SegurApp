@@ -73,13 +73,13 @@ fun Reports1() {
                 )
                 NavigationBarItem(
                     onClick = {},
-                    selected = true,
+                    selected = false,
                     icon = { Icon(imageVector = Icons.Default.Place, contentDescription = null) },
                     label = { Text("REPORTS") }
                 )
                 NavigationBarItem(
                     onClick = {},
-                    selected = false,
+                    selected = true,
                     icon = { Icon(imageVector = Icons.Default.Create, contentDescription = null) },
                     label = { Text("MINE") }
                 )
@@ -87,7 +87,7 @@ fun Reports1() {
                     onClick = {},
                     selected = false,
                     icon = { Icon(imageVector = Icons.Default.Person, contentDescription = null)},
-                    label = { Text("NOTIF") }
+                    label = { Text("PROFILE") }
                 )
             }
         },
@@ -111,7 +111,7 @@ fun Reports1() {
                         Icon(
                             imageVector = Icons.Default.Notifications,
                             contentDescription = null,
-                            modifier = Modifier.size(40.dp)
+                            modifier = Modifier.size(30.dp)
                         )
                     }
                 },
@@ -179,11 +179,11 @@ fun MyLazyColumn(reports: List<Report>, innerPadding: PaddingValues) {
             Card(
                 modifier = Modifier
                     .padding(vertical = 5.dp)
-                    .fillMaxSize()
+                    .fillMaxWidth()
 
             ) {
                 Column(
-                    modifier = Modifier.padding(16.dp)
+                    modifier = Modifier.padding(15.dp)
                 ) {
                     Image(
                         painter = rememberAsyncImagePainter(report.imageUrl),

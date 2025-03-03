@@ -6,8 +6,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.projectappmovil.Inicio
 import com.example.projectappmovil.CreateReport
+import com.example.projectappmovil.Password
+import com.example.projectappmovil.Profile
 import com.example.projectappmovil.Reports1
-import com.example.projectappmovil.password
 import com.example.projectappmovil.previewLogin
 import com.example.projectappmovil.registro
 
@@ -22,7 +23,7 @@ fun AppNavigation() {
             registro(navController)
         }
         composable(AppScreens.ForgotScreen.route) {
-            password(navController)
+            Password(navController)
         }
         composable(AppScreens.InicioScreen.route) {
             Inicio(navController)
@@ -32,6 +33,9 @@ fun AppNavigation() {
         }
         composable(AppScreens.ReportScreen.route) {
             Reports1()
+        }
+        composable(AppScreens.ProfileScreen.route) {
+            Profile()
         }
 
 

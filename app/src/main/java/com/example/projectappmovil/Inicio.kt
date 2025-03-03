@@ -29,6 +29,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -71,10 +72,10 @@ fun Inicio(navController: NavController){
                     label = { Text("MINE") }
                 )
                 NavigationBarItem(
-                    onClick = {},
+                    onClick = {navController.navigate(route = AppScreens.ProfileScreen.route)},
                     selected = false,
-                    icon = { Icon(imageVector = Icons.Default.Notifications, contentDescription = null) },
-                    label = { Text("NOTIFI") }
+                    icon = { Icon(imageVector = Icons.Default.Person, contentDescription = null) },
+                    label = { Text("PROFILE") }
                 )
             }
         },
@@ -92,17 +93,15 @@ fun Inicio(navController: NavController){
                     )
                 },
                 actions = {
-                    IconButton(
+                    SmallFloatingActionButton (
                         onClick = { },
-                        colors = IconButtonDefaults.iconButtonColors(
-                            contentColor = Color.Black,
-                            containerColor = Color.White
-                        )
+                        containerColor = Color.White
+
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Person,
+                            imageVector = Icons.Default.Notifications,
                             contentDescription = null,
-                            modifier = Modifier.size(40.dp)
+                            modifier = Modifier.size(30.dp)
                         )
                     }
                 },
