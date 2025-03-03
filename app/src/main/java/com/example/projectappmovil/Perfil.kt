@@ -26,6 +26,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBarDefaults
@@ -62,17 +63,14 @@ fun Perfil(){
                     )
                 },
                 actions = {
-                    IconButton(
+                    SmallFloatingActionButton (
                         onClick = { },
-                        colors = IconButtonDefaults.iconButtonColors(
-                            contentColor = Color.Black,
-                            containerColor = Color.White
-                        )
+                        containerColor = Color.White
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Person,
+                            imageVector = Icons.Default.Notifications,
                             contentDescription = null,
-                            modifier = Modifier.size(40.dp)
+                            modifier = Modifier.size(30.dp)
                         )
                     }
                 },
@@ -103,8 +101,8 @@ fun Perfil(){
                 NavigationBarItem(
                     onClick = {},
                     selected = false,
-                    icon = { Icon(imageVector = Icons.Default.Notifications, contentDescription = null) },
-                    label = { Text("NOTIFI") }
+                    icon = { Icon(imageVector = Icons.Default.Person, contentDescription = null) },
+                    label = { Text("PROFILE") }
                 )
             }
 
@@ -130,7 +128,7 @@ fun Perfil(){
             var ciudad by remember { mutableStateOf("") }
             var direccion by remember { mutableStateOf("") }
             var email by remember { mutableStateOf("") }
-            var contraseña by remember { mutableStateOf("") }
+            var contrasenia by remember { mutableStateOf("") }
             TextField(
                 value = nombre,
                 onValueChange = { newText -> nombre = newText },
@@ -168,8 +166,8 @@ fun Perfil(){
                 }
             )
             TextField(
-                value = contraseña,
-                onValueChange = { newText -> contraseña = newText },
+                value = contrasenia,
+                onValueChange = { newText -> contrasenia = newText },
                 label = { Text("Contraseña") },
                 modifier = Modifier.fillMaxWidth(0.8f),
                 leadingIcon = {

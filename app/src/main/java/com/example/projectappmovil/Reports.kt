@@ -1,19 +1,29 @@
 
 package com.example.projectappmovil
 
+import androidx.compose.runtime.*
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Place
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -23,6 +33,7 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -40,6 +51,8 @@ import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FirebaseFirestoreException
+import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
@@ -73,12 +86,7 @@ fun Reports1() {
                 NavigationBarItem(
                     onClick = {},
                     selected = false,
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Default.Notifications,
-                            contentDescription = null
-                        )
-                    },
+                    icon = { Icon(imageVector = Icons.Default.Person, contentDescription = null)},
                     label = { Text("NOTIF") }
                 )
             }
@@ -96,15 +104,12 @@ fun Reports1() {
                     )
                 },
                 actions = {
-                    IconButton(
+                    SmallFloatingActionButton (
                         onClick = { },
-                        colors = IconButtonDefaults.iconButtonColors(
-                            contentColor = Color.Black,
-                            containerColor = Color.White
-                        )
+                        containerColor = Color.White
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Person,
+                            imageVector = Icons.Default.Notifications,
                             contentDescription = null,
                             modifier = Modifier.size(40.dp)
                         )
@@ -114,64 +119,101 @@ fun Reports1() {
             )
         }
     ) { innerPadding ->
-            LoadImageFromFirestore(userId!!, innerPadding)
+        LoadImageFromFirestore2(userId!!, innerPadding)
     }
 }
 
 @Composable
-fun LoadImageFromFirestore(userId: String, innerPadding: PaddingValues) {
+fun LoadImageFromFirestore2(userId: String, innerPadding: PaddingValues) {
     val db = Firebase.firestore
-    var imageUrl by remember { mutableStateOf<String?>(null) }
-    var title by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
-    var ubication by remember { mutableStateOf("") }
+    var reports by remember { mutableStateOf<List<Report>>(emptyList()) }
 
-    LaunchedEffect(Unit) {
-        db.collection("clientes")
+    // Escuchar cambios en Firestore
+    LaunchedEffect(userId) {
+        val listenerRegistration = db.collection("clientes")
             .document(userId)
             .collection("reportes")
-            .get()
-            .addOnSuccessListener { result ->
-                for (document in result) {
-                    imageUrl = document.getString("imageUrl")
-                    title = document.getString("titulo") ?: ""
-                    description = document.getString("descripcion") ?: ""
-                    ubication = document.getString("ubicacion") ?: ""
+            .addSnapshotListener { snapshot: QuerySnapshot?, exception: FirebaseFirestoreException? ->
+                if (exception != null) {
+                    println("Error listening to Firestore: ${exception.message}")
+                    return@addSnapshotListener
                 }
+                // Convertir los documentos en una lista de Report
+                val newReports = snapshot?.documents?.mapNotNull { document ->
+                    Report(
+                        imageUrl = document.getString("imageUrl"),
+                        title = document.getString("titulo") ?: "",
+                        categoria = document.getString("categoria") ?: "",
+                        description = document.getString("descripcion") ?: "",
+                        ubication = document.getString("ubicacion") ?: ""
+                    )
+                } ?: emptyList()
+
+                reports = newReports
             }
-            .addOnFailureListener { exception ->
-                println("Error getting documents: ${exception.message}")
-            }
+//        onDispose {
+//            listenerRegistration.remove()
+//        }
     }
-    LazyColumn (
+
+    MyLazyColumn(reports = reports, innerPadding)
+}
+
+data class Report(
+    val imageUrl: String?,
+    val title: String,
+    val categoria: String,
+    val description: String,
+    val ubication: String
+)
+
+@Composable
+fun MyLazyColumn(reports: List<Report>, innerPadding: PaddingValues) {
+    LazyColumn(
         modifier = Modifier
-            .padding(innerPadding)) {
-        item {
-            imageUrl?.let { url ->
-                Card(
-                    modifier = Modifier
-                        .padding(15.dp)
-                        .size(height = 300.dp, width = 350.dp)
+            .padding(innerPadding)
+            .fillMaxWidth()
+            .padding(horizontal = 12.dp)
+    ) {
+        items(reports) { report ->
+            Card(
+                modifier = Modifier
+                    .padding(vertical = 5.dp)
+                    .fillMaxSize()
+
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp)
                 ) {
                     Image(
-                        painter = rememberAsyncImagePainter(url),
+                        painter = rememberAsyncImagePainter(report.imageUrl),
                         contentDescription = null,
                         modifier = Modifier
-                            .padding(horizontal = 16.dp)
                             .fillMaxWidth()
                             .height(200.dp)
-
                     )
-                    Text(text = "Titulo: $title",
+                    Text(text = "Titulo: " + report.title,
                         fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(horizontal = 16.dp)
-                    )
-                    Text(text = "Descripcion: $description",
-                        modifier = Modifier.padding(horizontal = 16.dp)
-                    )
-                    Text(text = "Ubicacion: $ubication" ,
-                        modifier = Modifier.padding(horizontal = 16.dp)
-                    )
+                        fontSize = 12.sp)
+                    Text(text = "Categoria: " + report.categoria,
+                        fontSize = 12.sp)
+                    Text(text = "Descripcion: "+report.description,
+                        fontSize = 12.sp)
+                    Text(text = "Ubicacion: "+report.ubication,
+                        fontSize = 12.sp)
+                    Row (
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        horizontalArrangement = Arrangement.End
+
+                    ) {
+                        Button(
+                            onClick = {},
+
+                        ) {
+                            Text(text = "Eliminar")
+                        }
+                    }
                 }
             }
         }
