@@ -28,6 +28,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,11 +41,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 
 @Preview
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Profile(){
+    val auth = FirebaseAuth.getInstance()
+    val user = auth.currentUser
+    val email = user?.email ?: ""
+
     Scaffold (
         topBar = {
             CenterAlignedTopAppBar(
@@ -120,11 +128,28 @@ fun Profile(){
                 color = MaterialTheme.colorScheme.primary
             )
 
+            val db = Firebase.firestore
             var nombre by remember { mutableStateOf("") }
             var ciudad by remember { mutableStateOf("") }
             var direccion by remember { mutableStateOf("") }
-            var email by remember { mutableStateOf("") }
+            var correo by remember { mutableStateOf("") }
             var contrasenia by remember { mutableStateOf("") }
+
+            LaunchedEffect(email) {
+                db.collection("clientes")
+                    .whereEqualTo("email", email)
+                    .get()
+                    .addOnSuccessListener { querySnapshot ->
+                        if (!querySnapshot.isEmpty){
+                            val document = querySnapshot.documents[0]
+                            nombre = document.getString("nombre") ?: ""
+                            ciudad = document.getString("ciudad") ?: ""
+                            direccion = document.getString("direccion") ?: ""
+                            correo = document.getString("email") ?: ""
+                            contrasenia = document.getString("contrasenia") ?: ""
+                        }
+                    }
+            }
             TextField(
                 value = nombre,
                 onValueChange = { newText -> nombre = newText },
@@ -153,8 +178,8 @@ fun Profile(){
                 }
             )
             TextField(
-                value = email,
-                onValueChange = { newText -> email = newText },
+                value = correo,
+                onValueChange = { newText -> correo = newText },
                 label = { Text("Email") },
                 modifier = Modifier.fillMaxWidth(0.8f),
                 leadingIcon = {
@@ -176,28 +201,32 @@ fun Profile(){
             ) {
                 Text(text = "GUARDAR")
             }
+            Button(
+                onClick = { },
+                modifier = Modifier.fillMaxWidth(0.6f),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.secondary,
+                )
+            ) {
+                Text(text = "CERRAR SESION")
 
-                Button(
-                    onClick = { },
-                    modifier = Modifier.fillMaxWidth(0.5f),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.secondary,
-                    )
-                ) {
-                    Text(text = "CERRAR SESION")
+            }
+            Button(
+                onClick = { },
+                modifier = Modifier.fillMaxWidth(0.6f),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Red,
+                )
+            ) {
+                Text(text = "ELIMINAR CUENTA")
 
-                }
-                Button(
-                    onClick = { },
-                    modifier = Modifier.fillMaxWidth(0.5f),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Red,
-                    )
-                ) {
-                    Text(text = "ELIMINAR CUENTA")
-
-                }
-
+            }
         }
     }
+}
+
+@Composable
+fun LoadPerfil(email: String) {
+
+
 }
