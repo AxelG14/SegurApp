@@ -3,10 +3,12 @@ package com.example.projectappmovil
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -17,14 +19,20 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Place
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -177,11 +185,13 @@ fun MyLazyColumn(reports: List<Report>, innerPadding: PaddingValues) {
             Card(
                 modifier = Modifier
                     .padding(vertical = 5.dp)
-                    .fillMaxWidth()
+                    .border(1.dp, Color.White, shape = MaterialTheme.shapes.medium)
+                    .fillMaxWidth(),
+                colors = CardDefaults.cardColors(Color.Gray)
 
             ) {
                 Column(
-                    //modifier = Modifier.padding(15.dp)
+
                 ) {
                     Row (
                         modifier = Modifier
@@ -193,7 +203,7 @@ fun MyLazyColumn(reports: List<Report>, innerPadding: PaddingValues) {
                             imageVector = Icons.Default.Person,
                             contentDescription = null,
                             modifier = Modifier.size(25.dp),
-                            tint = Color.Black
+                            tint = Color.Black,
                         )
                         Text(
                             text = "By: ${report.nombre}",
@@ -201,7 +211,6 @@ fun MyLazyColumn(reports: List<Report>, innerPadding: PaddingValues) {
                             modifier = Modifier.padding(horizontal = 5.dp),
                             fontWeight = FontWeight.Bold,
                             color = Color.Black
-
                         )
                     }
 
@@ -212,6 +221,12 @@ fun MyLazyColumn(reports: List<Report>, innerPadding: PaddingValues) {
                             .fillMaxWidth()
                             .height(200.dp)
                     )
+
+                }
+                Column (
+                    modifier = Modifier
+                        .background(color = Color.DarkGray),
+                ) {
                     Text(text = "Titulo: " + report.title,
                         fontWeight = FontWeight.Bold,
                         fontSize = 12.sp,
@@ -227,15 +242,46 @@ fun MyLazyColumn(reports: List<Report>, innerPadding: PaddingValues) {
                         modifier = Modifier.padding(horizontal = 10.dp))
                     Row (
                         modifier = Modifier
+                            .padding(10.dp)
                             .fillMaxSize(),
-                        horizontalArrangement = Arrangement.End
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
+                        IconButton(
+                            onClick = {},
+                            colors = IconButtonDefaults.iconButtonColors(Color.Transparent)
+                        ){
+                            Icon(
+                                imageVector = Icons.Default.Star,
+                                contentDescription = null,
+                                tint = Color.White,
+                                modifier = Modifier.size(25.dp)
+                            )
+                        }
+                        IconButton(
+                            onClick = {},
+
+                            colors = IconButtonDefaults.iconButtonColors(Color.Transparent)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.MailOutline,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(25.dp)
+
+                            )
+                        }
+                        Spacer(modifier = Modifier.padding(horizontal = 10.dp))
                         Button(
                             onClick = {},
-                            modifier = Modifier.padding(10.dp)
-
                         ) {
                             Text(text = "Eliminar")
+                        }
+                        Button(
+                            onClick = {},
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.secondary)
+                            ) {
+                            Text(text = "Editar")
                         }
                     }
                 }
