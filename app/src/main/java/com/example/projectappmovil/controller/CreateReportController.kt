@@ -24,11 +24,10 @@ class CreateReportController {
             "descripcion" to descripcion,
             "ubicacion" to ubicacion,
             "imageUrl" to imageUrl,
-            "nombre" to name
+            "nombre" to name,
+            "userId" to userId
         )
-        db.collection("clientes")
-            .document(userId)
-            .collection("reportes")
+        db.collection("reportes")
             .add(report)
             .addOnSuccessListener { documentReference ->
                 println("DocumentSnapshot written with ID: ${documentReference.id}")

@@ -24,8 +24,6 @@ import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -52,6 +50,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -62,7 +61,7 @@ import com.google.firebase.ktx.Firebase
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Reports1() {
+fun AllReports(navController: NavHostController) {
     val auth: FirebaseAuth = Firebase.auth
     val email = auth.currentUser?.email
     val userId = auth.currentUser?.uid
@@ -77,13 +76,13 @@ fun Reports1() {
                 )
                 NavigationBarItem(
                     onClick = {},
-                    selected = false,
+                    selected = true,
                     icon = { Icon(imageVector = Icons.Default.Place, contentDescription = null) },
                     label = { Text("REPORTS") }
                 )
                 NavigationBarItem(
                     onClick = {},
-                    selected = true,
+                    selected = false,
                     icon = { Icon(imageVector = Icons.Default.Create, contentDescription = null) },
                     label = { Text("MINE") }
                 )
@@ -124,25 +123,24 @@ fun Reports1() {
             )
         }
     ) { innerPadding ->
-        LoadImageFromFirestore2(userId!!, innerPadding)
+        LoadImageFromFirestore3(userId, innerPadding)
     }
 }
 
 @Composable
-fun LoadImageFromFirestore2(userId: String, innerPadding: PaddingValues) {
+fun LoadImageFromFirestore3(userId: String?, innerPadding: PaddingValues) {
     val db = Firebase.firestore
-    var reports by remember { mutableStateOf<List<Report>>(emptyList()) }
+    var reports by remember { mutableStateOf<List<Report2>>(emptyList()) }
 
-    LaunchedEffect(userId) {
+    LaunchedEffect(Unit) {
         val listenerRegistration = db.collection("reportes")
-            .whereEqualTo("userId", userId)
             .addSnapshotListener { snapshot: QuerySnapshot?, exception: FirebaseFirestoreException? ->
                 if (exception != null) {
                     println("Error listening to Firestore: ${exception.message}")
                     return@addSnapshotListener
                 }
                 val newReports = snapshot?.documents?.mapNotNull { document ->
-                    Report(
+                    Report2(
                         imageUrl = document.getString("imageUrl"),
                         title = document.getString("titulo") ?: "",
                         categoria = document.getString("categoria") ?: "",
@@ -154,13 +152,11 @@ fun LoadImageFromFirestore2(userId: String, innerPadding: PaddingValues) {
 
                 reports = newReports
             }
-
     }
-
-    MyLazyColumn(reports = reports, innerPadding)
+    MyLazyColumn2(reports = reports, innerPadding)
 }
 
-data class Report(
+data class Report2(
     val imageUrl: String?,
     val title: String,
     val categoria: String,
@@ -170,7 +166,7 @@ data class Report(
 )
 
 @Composable
-fun MyLazyColumn(reports: List<Report>, innerPadding: PaddingValues) {
+fun MyLazyColumn2(reports: List<Report2>, innerPadding: PaddingValues) {
     LazyColumn(
         modifier = Modifier
             .padding(innerPadding)
@@ -240,7 +236,7 @@ fun MyLazyColumn(reports: List<Report>, innerPadding: PaddingValues) {
                         modifier = Modifier
                             .padding(10.dp)
                             .fillMaxSize(),
-                        horizontalArrangement = Arrangement.SpaceBetween
+                        horizontalArrangement = Arrangement.End
                     ) {
                         IconButton(
                             onClick = {},
@@ -265,19 +261,6 @@ fun MyLazyColumn(reports: List<Report>, innerPadding: PaddingValues) {
                                 modifier = Modifier.size(25.dp)
 
                             )
-                        }
-                        Spacer(modifier = Modifier.padding(horizontal = 10.dp))
-                        Button(
-                            onClick = {},
-                        ) {
-                            Text(text = "Eliminar")
-                        }
-                        Button(
-                            onClick = {},
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.secondary)
-                            ) {
-                            Text(text = "Editar")
                         }
                     }
                 }

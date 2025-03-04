@@ -60,7 +60,7 @@ fun Inicio(navController: NavController){
                     label = { Text("MENU") }
                 )
                 NavigationBarItem(
-                    onClick = {},
+                    onClick = {navController.navigate(route = AppScreens.AllReportsScreen.route)},
                     selected = false,
                     icon = { Icon(imageVector = Icons.Default.Place, contentDescription = null) },
                     label = { Text("REPORTS") }
