@@ -82,7 +82,7 @@ fun Inicio(navController: NavController){
 
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text("$email",
+                title = { Text("Inicio",
                     fontSize = 20.sp
                 )},
                 navigationIcon = {
@@ -95,8 +95,8 @@ fun Inicio(navController: NavController){
                 actions = {
                     SmallFloatingActionButton (
                         onClick = { },
-                        containerColor = Color.White
-
+                        containerColor = Color.White,
+                        contentColor = Color.Black
                     ) {
                         Icon(
                             imageVector = Icons.Default.Notifications,

@@ -31,6 +31,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,11 +44,19 @@ import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.example.projectappmovil.controller.CreateReportController
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.auth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateReport(){
+    val db = Firebase.firestore
+    val auth = Firebase.auth
+    val user = auth.currentUser
+
     Scaffold (
         bottomBar = {
             NavigationBar { NavigationBarItem(
@@ -100,6 +109,19 @@ fun CreateReport(){
             var expanded by remember { mutableStateOf(false) }
             var descripcion by remember { mutableStateOf("") }
             var ubicacion by remember { mutableStateOf("") }
+            var nombre by remember { mutableStateOf("") }
+
+            LaunchedEffect(user?.email) {
+                db.collection("clientes")
+                    .whereEqualTo("email", user?.email)
+                    .get()
+                    .addOnSuccessListener { querySnapshot ->
+                        if (!querySnapshot.isEmpty){
+                            val document = querySnapshot.documents[0]
+                            nombre = document.getString("nombre") ?: ""
+                        }
+                    }
+            }
 
             TextField(
                 value = titulo,
@@ -195,6 +217,8 @@ fun CreateReport(){
             val createReportController = CreateReportController()
             val currentUser = FirebaseAuth.getInstance()
             val userId = currentUser.uid
+            val email = currentUser.currentUser?.email
+
             var showDialog by remember { mutableStateOf(false) }
             var showDialog2 by remember { mutableStateOf(false) }
 
@@ -204,7 +228,7 @@ fun CreateReport(){
                         showDialog = true
 
                     } else {
-                        if (userId != null && imageUri != null) {
+                        if (userId != null && imageUri != null && email != null) {
                             imageUri?.let { uri ->
                                 createReportController.saveReportImageToFirebaseStorage(
                                     userId,
@@ -212,7 +236,8 @@ fun CreateReport(){
                                     categoria,
                                     descripcion,
                                     ubicacion,
-                                    uri
+                                    uri,
+                                    nombre
                                 )
                                 showDialog2 = true
                                 titulo = ""
@@ -248,12 +273,12 @@ fun CreateReport(){
             }
             if (showDialog2) {
                 AlertDialog(
-                    onDismissRequest = { showDialog = false },
+                    onDismissRequest = { showDialog2 = false },
                     title = { Text("CORRECTO") },
                     text = { Text("Se creó el reporte correctamente!") },
                     confirmButton = {
                         Button(
-                            onClick = { showDialog = false }
+                            onClick = { showDialog2 = false }
                         ) {
                             Text("Aceptar")
                         }

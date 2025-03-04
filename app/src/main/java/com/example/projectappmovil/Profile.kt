@@ -5,15 +5,18 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Place
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -41,14 +44,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import com.example.projectappmovil.controller.ProfileController
+import com.example.projectappmovil.navegation.AppScreens
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
-@Preview
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Profile(){
+fun Profile(navController: NavController){
     val auth = FirebaseAuth.getInstance()
     val user = auth.currentUser
     val email = user?.email ?: ""
@@ -56,8 +61,11 @@ fun Profile(){
     Scaffold (
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text("",
-                    fontSize = 20.sp
+                title = { Text(
+                    text = "Perfil",
+                    fontSize = 30.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
                 ) },
                 navigationIcon = {
                     Image(
@@ -69,7 +77,8 @@ fun Profile(){
                 actions = {
                     SmallFloatingActionButton (
                         onClick = { },
-                        containerColor = Color.White
+                        containerColor = Color.White,
+                        contentColor = Color.Black
                     ) {
                         Icon(
                             imageVector = Icons.Default.Notifications,
@@ -121,12 +130,6 @@ fun Profile(){
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly
         ) {
-            Text(
-                text = "Perfil",
-                fontSize = 30.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
-            )
 
             val db = Firebase.firestore
             var nombre by remember { mutableStateOf("") }
@@ -195,21 +198,36 @@ fun Profile(){
                     Icon(imageVector = Icons.Default.Create, contentDescription = null)
                 }
             )
+
+            val profile = ProfileController()
+            var showDialog by remember { mutableStateOf(false) }
+            var showDialog2 by remember { mutableStateOf(false) }
             Button(
-                onClick = {},
-                modifier = Modifier.fillMaxWidth(0.7f)
+                onClick = {
+                    if (nombre.isEmpty() || ciudad.isEmpty() || direccion.isEmpty()
+                        || correo.isEmpty() || contrasenia.isEmpty()) {
+                        showDialog = true
+                    } else {
+                        profile.udpateInfo(email, nombre, ciudad, direccion, correo, contrasenia)
+                        showDialog2 = true
+                    } },
+                modifier = Modifier
+                    .height(45.dp)
+                    .fillMaxWidth(0.7f)
             ) {
-                Text(text = "GUARDAR")
+                Text(text = "GUARDAR CAMBIOS")
             }
             Button(
-                onClick = { },
+                onClick = {
+                    profile.signOut()
+                    navController.navigate(route = AppScreens.MainScreen.route)
+                          },
                 modifier = Modifier.fillMaxWidth(0.6f),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.secondary,
                 )
             ) {
                 Text(text = "CERRAR SESION")
-
             }
             Button(
                 onClick = { },
@@ -221,12 +239,36 @@ fun Profile(){
                 Text(text = "ELIMINAR CUENTA")
 
             }
+            if (showDialog) {
+                AlertDialog(
+                    onDismissRequest = { showDialog = false },
+                    title = { Text("Error") },
+                    text = { Text("Debe llenar todos los campos!") },
+                    confirmButton = {
+                        Button(
+                            onClick = { showDialog = false }
+                        ) {
+                            Text("Aceptar")
+                        }
+                    }
+                )
+            }
+            if (showDialog2) {
+                AlertDialog(
+                    onDismissRequest = { showDialog2 = false },
+                    title = { Text("Éxito") },
+                    text = { Text("Se han guardado los cambios!") },
+                    icon = {Icons.Default.Check},
+                    confirmButton = {
+                        Button(
+                            onClick = { showDialog2 = false }
+                        ) {
+                            Text("Aceptar")
+                        }
+                    }
+                )
+            }
         }
     }
 }
 
-@Composable
-fun LoadPerfil(email: String) {
-
-
-}

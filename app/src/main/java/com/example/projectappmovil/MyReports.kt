@@ -1,20 +1,17 @@
 
 package com.example.projectappmovil
 
-import androidx.compose.runtime.*
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -28,8 +25,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
@@ -93,7 +89,7 @@ fun Reports1() {
         },
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text("$email",
+                title = { Text("Reportes",
                     fontSize = 20.sp
                 ) },
                 navigationIcon = {
@@ -106,7 +102,8 @@ fun Reports1() {
                 actions = {
                     SmallFloatingActionButton (
                         onClick = { },
-                        containerColor = Color.White
+                        containerColor = Color.White,
+                        contentColor = Color.Black
                     ) {
                         Icon(
                             imageVector = Icons.Default.Notifications,
@@ -128,7 +125,6 @@ fun LoadImageFromFirestore2(userId: String, innerPadding: PaddingValues) {
     val db = Firebase.firestore
     var reports by remember { mutableStateOf<List<Report>>(emptyList()) }
 
-    // Escuchar cambios en Firestore
     LaunchedEffect(userId) {
         val listenerRegistration = db.collection("clientes")
             .document(userId)
@@ -145,7 +141,8 @@ fun LoadImageFromFirestore2(userId: String, innerPadding: PaddingValues) {
                         title = document.getString("titulo") ?: "",
                         categoria = document.getString("categoria") ?: "",
                         description = document.getString("descripcion") ?: "",
-                        ubication = document.getString("ubicacion") ?: ""
+                        ubication = document.getString("ubicacion") ?: "",
+                        nombre = document.getString("nombre") ?: ""
                     )
                 } ?: emptyList()
 
@@ -164,7 +161,8 @@ data class Report(
     val title: String,
     val categoria: String,
     val description: String,
-    val ubication: String
+    val ubication: String,
+    val nombre: String
 )
 
 @Composable
@@ -183,8 +181,30 @@ fun MyLazyColumn(reports: List<Report>, innerPadding: PaddingValues) {
 
             ) {
                 Column(
-                    modifier = Modifier.padding(15.dp)
+                    //modifier = Modifier.padding(15.dp)
                 ) {
+                    Row (
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(color = MaterialTheme.colorScheme.primary)
+                            .padding(10.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Person,
+                            contentDescription = null,
+                            modifier = Modifier.size(25.dp),
+                            tint = Color.Black
+                        )
+                        Text(
+                            text = "By: ${report.nombre}",
+                            fontSize = 15.sp,
+                            modifier = Modifier.padding(horizontal = 5.dp),
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Black
+
+                        )
+                    }
+
                     Image(
                         painter = rememberAsyncImagePainter(report.imageUrl),
                         contentDescription = null,
@@ -194,21 +214,25 @@ fun MyLazyColumn(reports: List<Report>, innerPadding: PaddingValues) {
                     )
                     Text(text = "Titulo: " + report.title,
                         fontWeight = FontWeight.Bold,
-                        fontSize = 12.sp)
+                        fontSize = 12.sp,
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp))
                     Text(text = "Categoria: " + report.categoria,
-                        fontSize = 12.sp)
+                        fontSize = 12.sp,
+                        modifier = Modifier.padding(horizontal = 10.dp))
                     Text(text = "Descripcion: "+report.description,
-                        fontSize = 12.sp)
+                        fontSize = 12.sp,
+                        modifier = Modifier.padding(horizontal = 10.dp))
                     Text(text = "Ubicacion: "+report.ubication,
-                        fontSize = 12.sp)
+                        fontSize = 12.sp,
+                        modifier = Modifier.padding(horizontal = 10.dp))
                     Row (
                         modifier = Modifier
                             .fillMaxSize(),
                         horizontalArrangement = Arrangement.End
-
                     ) {
                         Button(
                             onClick = {},
+                            modifier = Modifier.padding(10.dp)
 
                         ) {
                             Text(text = "Eliminar")

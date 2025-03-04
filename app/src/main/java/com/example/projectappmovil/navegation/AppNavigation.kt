@@ -35,7 +35,7 @@ fun AppNavigation() {
             Reports1()
         }
         composable(AppScreens.ProfileScreen.route) {
-            Profile()
+            Profile(navController)
         }
 
 
