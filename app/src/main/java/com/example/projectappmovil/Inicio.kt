@@ -66,7 +66,7 @@ fun Inicio(navController: NavController){
                     label = { Text("REPORTS") }
                 )
                 NavigationBarItem(
-                    onClick = {navController.navigate(route = AppScreens.ReportScreen.route)},
+                    onClick = {navController.navigate(route = AppScreens.MyReportsScreen.route)},
                     selected = false,
                     icon = { Icon(imageVector = Icons.Default.Create, contentDescription = null) },
                     label = { Text("MINE") }
@@ -123,7 +123,7 @@ fun Inicio(navController: NavController){
                     colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary),
                     modifier = Modifier
                         .size(height = 50.dp, width = 300.dp),
-                    border = BorderStroke(1.dp, Color.Blue)
+                    border = BorderStroke(1.dp, Color.White)
                 ) {
                     Text("CREAR REPORTE")
                 }

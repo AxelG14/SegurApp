@@ -63,9 +63,8 @@ fun Profile(navController: NavController){
             CenterAlignedTopAppBar(
                 title = { Text(
                     text = "Perfil",
-                    fontSize = 30.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold
                 ) },
                 navigationIcon = {
                     Image(

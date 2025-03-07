@@ -5,6 +5,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.projectappmovil.AllReports
+import com.example.projectappmovil.Comments
 import com.example.projectappmovil.Inicio
 import com.example.projectappmovil.CreateReport
 import com.example.projectappmovil.Password
@@ -32,7 +33,7 @@ fun AppNavigation() {
         composable(AppScreens.CreateReportScreen.route) {
             CreateReport()
         }
-        composable(AppScreens.ReportScreen.route) {
+        composable(AppScreens.MyReportsScreen.route) {
             Reports1()
         }
         composable(AppScreens.ProfileScreen.route) {
@@ -40,6 +41,9 @@ fun AppNavigation() {
         }
         composable(AppScreens.AllReportsScreen.route) {
             AllReports(navController)
+        }
+        composable(AppScreens.CommentsScreen.route) {
+            Comments()
         }
 
 

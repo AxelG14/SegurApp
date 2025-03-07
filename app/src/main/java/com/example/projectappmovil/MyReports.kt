@@ -52,7 +52,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
+import com.example.projectappmovil.navegation.AppScreens
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestoreException
@@ -62,7 +64,7 @@ import com.google.firebase.ktx.Firebase
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Reports1() {
+fun Reports1(navController: NavController) {
     val auth: FirebaseAuth = Firebase.auth
     val email = auth.currentUser?.email
     val userId = auth.currentUser?.uid
@@ -70,25 +72,25 @@ fun Reports1() {
         bottomBar = {
             NavigationBar {
                 NavigationBarItem(
-                    onClick = {},
+                    onClick = {navController.navigate(route = AppScreens.InicioScreen.route)},
                     selected = false,
                     icon = { Icon(imageVector = Icons.Default.Home, contentDescription = null) },
                     label = { Text("MENU") }
                 )
                 NavigationBarItem(
-                    onClick = {},
+                    onClick = {navController.navigate(route = AppScreens.AllReportsScreen.route)},
                     selected = false,
                     icon = { Icon(imageVector = Icons.Default.Place, contentDescription = null) },
                     label = { Text("REPORTS") }
                 )
                 NavigationBarItem(
-                    onClick = {},
+                    onClick = {navController.navigate(route = AppScreens.MyReportsScreen.route)},
                     selected = true,
                     icon = { Icon(imageVector = Icons.Default.Create, contentDescription = null) },
                     label = { Text("MINE") }
                 )
                 NavigationBarItem(
-                    onClick = {},
+                    onClick = {navController.navigate(route = AppScreens.ProfileScreen.route)},
                     selected = false,
                     icon = { Icon(imageVector = Icons.Default.Person, contentDescription = null)},
                     label = { Text("PROFILE") }
@@ -154,9 +156,7 @@ fun LoadImageFromFirestore2(userId: String, innerPadding: PaddingValues) {
 
                 reports = newReports
             }
-
     }
-
     MyLazyColumn(reports = reports, innerPadding)
 }
 
@@ -186,9 +186,7 @@ fun MyLazyColumn(reports: List<Report>, innerPadding: PaddingValues) {
                 colors = CardDefaults.cardColors(Color.Gray)
 
             ) {
-                Column(
-
-                ) {
+                Column{
                     Row (
                         modifier = Modifier
                             .fillMaxWidth()

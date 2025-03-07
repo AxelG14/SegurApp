@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -16,12 +17,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Place
+import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -36,6 +40,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -43,15 +48,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
+import com.example.projectappmovil.controller.CommentController
 import com.example.projectappmovil.navegation.AppScreens
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -60,42 +67,77 @@ import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AllReports(navController: NavHostController) {
+fun Comments() {
     val auth: FirebaseAuth = Firebase.auth
+    val user = auth.currentUser
+    val userId = user?.uid
+    val db = Firebase.firestore
     Scaffold(
         bottomBar = {
             NavigationBar {
-                NavigationBarItem(
-                    onClick = {navController.navigate(route = AppScreens.InicioScreen.route)},
-                    selected = false,
-                    icon = { Icon(imageVector = Icons.Default.Home, contentDescription = null) },
-                    label = { Text("MENU") }
-                )
-                NavigationBarItem(
-                    onClick = {navController.navigate(route = AppScreens.AllReportsScreen.route)},
-                    selected = true,
-                    icon = { Icon(imageVector = Icons.Default.Place, contentDescription = null) },
-                    label = { Text("REPORTS") }
-                )
-                NavigationBarItem(
-                    onClick = {navController.navigate(route = AppScreens.MyReportsScreen.route)},
-                    selected = false,
-                    icon = { Icon(imageVector = Icons.Default.Create, contentDescription = null) },
-                    label = { Text("MINE") }
-                )
-                NavigationBarItem(
-                    onClick = {navController.navigate(route = AppScreens.ProfileScreen.route)},
-                    selected = false,
-                    icon = { Icon(imageVector = Icons.Default.Person, contentDescription = null)},
-                    label = { Text("PROFILE") }
-                )
+                var comentario by remember { mutableStateOf("") }
+                var nombre by remember { mutableStateOf("") }
+
+                LaunchedEffect(user?.email) {
+                    db.collection("clientes")
+                        .whereEqualTo("email", user?.email)
+                        .get()
+                        .addOnSuccessListener { querySnapshot ->
+                            if (!querySnapshot.isEmpty){
+                                val document = querySnapshot.documents[0]
+                                nombre = document.getString("nombre") ?: ""
+                            }
+                        }
+                }
+
+                Row (
+                    modifier = Modifier
+                        .padding(10.dp)
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically
+                ){
+                    TextField(
+                        value = comentario,
+                        onValueChange = {comentario = it},
+                        label = { Text("Comentar")},
+                        modifier = Modifier
+                            .background(color = Color.Transparent)
+                            .border(1.dp, color = MaterialTheme.colorScheme.primary)
+                            .fillMaxWidth(0.8f)
+                            .height(50.dp),
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.Create,
+                                contentDescription = null,
+                                modifier = Modifier.size(20.dp),
+                                tint = Color.White
+                            )
+                        }
+                    )
+                    val save = CommentController()
+                    IconButton(
+                        onClick = {save.saveComment(nombre, comentario, userId!!) },
+                        colors = IconButtonDefaults.iconButtonColors(
+                            containerColor = Color.White)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = null,
+                            modifier = Modifier.size(25.dp),
+                            tint = Color.Black
+                        )
+                    }
+                }
+
             }
         },
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text("Reportes",
+                title = { Text("Comentarios",
                     fontSize = 20.sp
                 ) },
                 navigationIcon = {
@@ -122,57 +164,51 @@ fun AllReports(navController: NavHostController) {
             )
         }
     ) { innerPadding ->
-        LoadImageFromFirestore3(innerPadding, navController)
+        LoadComments(innerPadding)
     }
 }
 
 @Composable
-fun LoadImageFromFirestore3(innerPadding: PaddingValues, navController: NavController) {
+fun LoadComments(innerPadding: PaddingValues) {
     val db = Firebase.firestore
-    var reports by remember { mutableStateOf<List<Report2>>(emptyList()) }
+    var comment by remember { mutableStateOf<List<Comments>>(emptyList()) }
 
     LaunchedEffect(Unit) {
-        val listenerRegistration = db.collection("reportes")
+        val listenerRegistration = db.collection("comentarios")
             .addSnapshotListener { snapshot: QuerySnapshot?, exception: FirebaseFirestoreException? ->
                 if (exception != null) {
                     println("Error listening to Firestore: ${exception.message}")
                     return@addSnapshotListener
                 }
-                val newReports = snapshot?.documents?.mapNotNull { document ->
-                    Report2(
-                        imageUrl = document.getString("imageUrl"),
-                        title = document.getString("titulo") ?: "",
-                        categoria = document.getString("categoria") ?: "",
-                        description = document.getString("descripcion") ?: "",
-                        ubication = document.getString("ubicacion") ?: "",
-                        nombre = document.getString("nombre") ?: ""
+                val newComment = snapshot?.documents?.mapNotNull { document ->
+                    Comments(
+                        nombre = document.getString("nombre") ?: "",
+                        descripcion = document.getString("descripcion") ?: "",
+                        userId = document.getString("userId") ?: ""
                     )
                 } ?: emptyList()
 
-                reports = newReports
+                comment = newComment
             }
     }
-    MyLazyColumn2(reports = reports, innerPadding, navController)
+    MyLazyColumn3(comments = comment, innerPadding)
 }
 
-data class Report2(
-    val imageUrl: String?,
-    val title: String,
-    val categoria: String,
-    val description: String,
-    val ubication: String,
-    val nombre: String
+data class Comments(
+    val nombre: String,
+    val descripcion: String,
+    val userId: String
 )
 
 @Composable
-fun MyLazyColumn2(reports: List<Report2>, innerPadding: PaddingValues, navController: NavController) {
+fun MyLazyColumn3(comments: List<Comments>, innerPadding: PaddingValues) {
     LazyColumn(
         modifier = Modifier
             .padding(innerPadding)
             .fillMaxWidth()
             .padding(horizontal = 12.dp)
     ) {
-        items(reports) { report ->
+        items(comments) { comment ->
             Card(
                 modifier = Modifier
                     .padding(vertical = 5.dp)
@@ -195,7 +231,7 @@ fun MyLazyColumn2(reports: List<Report2>, innerPadding: PaddingValues, navContro
                             tint = Color.Black,
                         )
                         Text(
-                            text = "By: ${report.nombre}",
+                            text = "By: ${comment.nombre}",
                             fontSize = 15.sp,
                             modifier = Modifier.padding(horizontal = 5.dp),
                             fontWeight = FontWeight.Bold,
@@ -203,64 +239,13 @@ fun MyLazyColumn2(reports: List<Report2>, innerPadding: PaddingValues, navContro
                         )
                     }
 
-                    Image(
-                        painter = rememberAsyncImagePainter(report.imageUrl),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(200.dp)
-                    )
-
-                }
-                Column (
-                    modifier = Modifier
-                        .background(color = Color.DarkGray),
-                ) {
-                    Text(text = "Titulo: " + report.title,
+                    Text(text = comment.descripcion,
                         fontWeight = FontWeight.Bold,
                         fontSize = 12.sp,
                         modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp))
-                    Text(text = "Categoria: " + report.categoria,
-                        fontSize = 12.sp,
-                        modifier = Modifier.padding(horizontal = 10.dp))
-                    Text(text = "Descripcion: "+report.description,
-                        fontSize = 12.sp,
-                        modifier = Modifier.padding(horizontal = 10.dp))
-                    Text(text = "Ubicacion: "+report.ubication,
-                        fontSize = 12.sp,
-                        modifier = Modifier.padding(horizontal = 10.dp))
-                    Row (
-                        modifier = Modifier
-                            .padding(horizontal = 10.dp, vertical = 5.dp)
-                            .fillMaxSize(),
-                        horizontalArrangement = Arrangement.End
-                    ) {
-                        IconButton(
-                            onClick = {},
-                            colors = IconButtonDefaults.iconButtonColors(Color.Transparent)
-                        ){
-                            Icon(
-                                imageVector = Icons.Default.Star,
-                                contentDescription = null,
-                                tint = Color.White,
-                                modifier = Modifier.size(25.dp)
-                            )
-                        }
-                        IconButton(
-                            onClick = {navController.navigate(route = AppScreens.CommentsScreen.route)},
-                            colors = IconButtonDefaults.iconButtonColors(Color.Transparent)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.MailOutline,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(25.dp)
-
-                            )
-                        }
-                    }
                 }
-            }
+
+                }
         }
     }
 }

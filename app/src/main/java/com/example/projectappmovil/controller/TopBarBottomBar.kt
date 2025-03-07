@@ -52,7 +52,7 @@ class TopBarBottomBar {
                 label = { Text("REPORTS") }
             )
             NavigationBarItem(
-                onClick = {navController.navigate(route = AppScreens.ReportScreen.route)},
+                onClick = {navController.navigate(route = AppScreens.MyReportsScreen.route)},
                 selected = false,
                 icon = { Icon(imageVector = Icons.Default.Create, contentDescription = null) },
                 label = { Text("MINE") }
