@@ -36,6 +36,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -52,6 +53,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
+import com.example.projectappmovil.controller.CreateReportController
+import com.example.projectappmovil.controller.GlobalData
 import com.example.projectappmovil.navegation.AppScreens
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -145,7 +148,9 @@ fun LoadImageFromFirestore3(innerPadding: PaddingValues, navController: NavContr
                         categoria = document.getString("categoria") ?: "",
                         description = document.getString("descripcion") ?: "",
                         ubication = document.getString("ubicacion") ?: "",
-                        nombre = document.getString("nombre") ?: ""
+                        nombre = document.getString("nombre") ?: "",
+                        idReport = document.getString("idReport") ?: ""
+
                     )
                 } ?: emptyList()
 
@@ -161,8 +166,10 @@ data class Report2(
     val categoria: String,
     val description: String,
     val ubication: String,
-    val nombre: String
+    val nombre: String,
+    val idReport: String
 )
+
 
 @Composable
 fun MyLazyColumn2(reports: List<Report2>, innerPadding: PaddingValues, navController: NavController) {
@@ -172,6 +179,7 @@ fun MyLazyColumn2(reports: List<Report2>, innerPadding: PaddingValues, navContro
             .fillMaxWidth()
             .padding(horizontal = 12.dp)
     ) {
+
         items(reports) { report ->
             Card(
                 modifier = Modifier
@@ -247,7 +255,7 @@ fun MyLazyColumn2(reports: List<Report2>, innerPadding: PaddingValues, navContro
                             )
                         }
                         IconButton(
-                            onClick = {navController.navigate(route = AppScreens.CommentsScreen.route)},
+                            onClick = {navController.navigate(route = AppScreens.CommentsScreen.createRoute(report.idReport))},
                             colors = IconButtonDefaults.iconButtonColors(Color.Transparent)
                         ) {
                             Icon(

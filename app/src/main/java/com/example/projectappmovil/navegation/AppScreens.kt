@@ -9,5 +9,7 @@ open class AppScreens(val route: String) {
     object MyReportsScreen : AppScreens("myReports_screen")
     object AllReportsScreen : AppScreens("allReports_screen")
     object ProfileScreen : AppScreens("profile_screen")
-    object CommentsScreen : AppScreens("comments_screen")
+    object CommentsScreen : AppScreens("comments_screen/{idReport}"){
+        fun createRoute(idReport: String) = "comments_screen/$idReport"
+    }
 }

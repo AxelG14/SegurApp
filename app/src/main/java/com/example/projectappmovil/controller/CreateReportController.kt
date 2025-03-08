@@ -1,9 +1,13 @@
 package com.example.projectappmovil.controller
 
+import android.annotation.SuppressLint
 import android.net.Uri
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -13,6 +17,7 @@ import java.util.UUID
 
 class CreateReportController {
     val db = Firebase.firestore
+    var idDoc: String = ""
     fun saveReport(
         userId: String, titulo: String, categoria: String, descripcion: String,
         ubicacion: String, imageUrl: String, name: String
@@ -31,8 +36,16 @@ class CreateReportController {
             .add(report)
             .addOnSuccessListener { documentReference ->
                 println("DocumentSnapshot written with ID: ${documentReference.id}")
+                val id = documentReference.id
+                GlobalData.currentReportId.value = id
+                db.collection("reportes")
+                    .document(id)
+                    .update("idReport", id)
+
             }
     }
+
+
 
     fun saveReportImageToFirebaseStorage(
         userId: String,
@@ -41,7 +54,7 @@ class CreateReportController {
         descripcion: String,
         ubicacion: String,
         imageUri: Uri,
-        nombre: String
+        nombre: String,
     ) {
         val storage = FirebaseStorage.getInstance()
         val storageRef = storage.reference
@@ -58,5 +71,8 @@ class CreateReportController {
             println("Error uploading image: ${exception.message}")
         }
     }
+}
 
+object GlobalData {
+    var currentReportId = mutableStateOf("")
 }

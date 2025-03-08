@@ -80,7 +80,7 @@ fun Password(navController: NavController){
         ) {
             Text(text = "CONFIRMAR")
         }
-        Button(
+        Button( 
             onClick = { navController.popBackStack() },
             modifier = Modifier
                 .padding(top = 40.dp)

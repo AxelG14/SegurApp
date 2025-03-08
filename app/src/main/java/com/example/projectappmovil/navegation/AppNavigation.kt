@@ -1,9 +1,11 @@
 package com.example.projectappmovil.navegation
 
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.projectappmovil.AllReports
 import com.example.projectappmovil.Comments
 import com.example.projectappmovil.Inicio
@@ -42,10 +44,16 @@ fun AppNavigation() {
         composable(AppScreens.AllReportsScreen.route) {
             AllReports(navController)
         }
-        composable(AppScreens.CommentsScreen.route) {
-            Comments()
+        composable(
+            route = AppScreens.CommentsScreen.route,
+            arguments = listOf(navArgument("idReport") { type = NavType.StringType })
+        ) { navBackStackEntry ->
+            val idReport = navBackStackEntry.arguments?.getString("idReport")
+            if (idReport != null) {
+                Comments(navController, idReport)
+            }
         }
 
-
         }
+
 }

@@ -17,7 +17,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Home
@@ -56,6 +58,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.example.projectappmovil.controller.CommentController
@@ -70,11 +73,12 @@ import com.google.firebase.ktx.Firebase
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Comments() {
+fun Comments(navController: NavHostController, idReport1: String) {
     val auth: FirebaseAuth = Firebase.auth
     val user = auth.currentUser
     val userId = user?.uid
     val db = Firebase.firestore
+
     Scaffold(
         bottomBar = {
             NavigationBar {
@@ -120,7 +124,7 @@ fun Comments() {
                     )
                     val save = CommentController()
                     IconButton(
-                        onClick = {save.saveComment(nombre, comentario, userId!!) },
+                        onClick = {save.saveComment(nombre, comentario, userId!!, idReport1!!) },
                         colors = IconButtonDefaults.iconButtonColors(
                             containerColor = Color.White)
                     ) {
@@ -141,11 +145,17 @@ fun Comments() {
                     fontSize = 20.sp
                 ) },
                 navigationIcon = {
-                    Image(
-                        painter = painterResource(R.drawable.vueloenavion),
-                        contentDescription = null,
-                        modifier = Modifier.size(50.dp)
-                    )
+                    SmallFloatingActionButton (
+                        onClick = { navController.popBackStack() },
+                        containerColor = Color.White,
+                        contentColor = Color.Black
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = null,
+                            modifier = Modifier.size(30.dp)
+                        )
+                    }
                 },
                 actions = {
                     SmallFloatingActionButton (
@@ -164,17 +174,20 @@ fun Comments() {
             )
         }
     ) { innerPadding ->
-        LoadComments(innerPadding)
+        LoadComments(innerPadding, idReport1!!)
     }
 }
 
 @Composable
-fun LoadComments(innerPadding: PaddingValues) {
+fun LoadComments(innerPadding: PaddingValues, idReport: String) {
     val db = Firebase.firestore
     var comment by remember { mutableStateOf<List<Comments>>(emptyList()) }
 
     LaunchedEffect(Unit) {
-        val listenerRegistration = db.collection("comentarios")
+        db.collection("reportes")
+            .document(idReport)
+            .collection("comentarios")
+            .whereEqualTo("idReport", idReport)
             .addSnapshotListener { snapshot: QuerySnapshot?, exception: FirebaseFirestoreException? ->
                 if (exception != null) {
                     println("Error listening to Firestore: ${exception.message}")
@@ -184,7 +197,9 @@ fun LoadComments(innerPadding: PaddingValues) {
                     Comments(
                         nombre = document.getString("nombre") ?: "",
                         descripcion = document.getString("descripcion") ?: "",
-                        userId = document.getString("userId") ?: ""
+                        userId = document.getString("userId") ?: "",
+                        idReport = document.getString("idReport") ?: ""
+
                     )
                 } ?: emptyList()
 
@@ -197,7 +212,8 @@ fun LoadComments(innerPadding: PaddingValues) {
 data class Comments(
     val nombre: String,
     val descripcion: String,
-    val userId: String
+    val userId: String,
+    val idReport: String
 )
 
 @Composable
