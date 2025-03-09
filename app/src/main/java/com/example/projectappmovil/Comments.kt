@@ -29,6 +29,8 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -123,8 +125,16 @@ fun Comments(navController: NavHostController, idReport1: String) {
                         }
                     )
                     val save = CommentController()
+                    var showDialog by remember { mutableStateOf(false) }
+                    var showDialog2 by remember { mutableStateOf(false) }
                     IconButton(
-                        onClick = {save.saveComment(nombre, comentario, userId!!, idReport1!!) },
+                        onClick = { if (comentario.isEmpty()) {
+                            showDialog = true
+                        } else {
+                            save.saveComment(nombre, comentario, userId!!, idReport1)
+                            comentario = ""
+                            showDialog2 = true
+                        }},
                         colors = IconButtonDefaults.iconButtonColors(
                             containerColor = Color.White)
                     ) {
@@ -135,6 +145,36 @@ fun Comments(navController: NavHostController, idReport1: String) {
                             tint = Color.Black
                         )
                     }
+                    if (showDialog) {
+                        AlertDialog(
+                            onDismissRequest = { showDialog = false },
+                            title = { Text("CORRECTO") },
+                            text = { Text("Debes escribir un comentario!") },
+                            confirmButton = {
+                                Button(
+                                    onClick = { showDialog = false }
+                                ) {
+                                    Text("Aceptar")
+                                }
+                            }
+                        )
+
+                    }
+                    if (showDialog2) {
+                        AlertDialog(
+                            onDismissRequest = { showDialog2 = false },
+                            title = { Text("CORRECTO") },
+                            text = { Text("Se creó el comentario correctamente!") },
+                            confirmButton = {
+                                Button(
+                                    onClick = { showDialog2 = false }
+                                ) {
+                                    Text("Aceptar")
+                                }
+                            }
+                        )
+                    }
+
                 }
 
             }

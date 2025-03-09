@@ -5,16 +5,19 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Home
@@ -40,21 +43,24 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.example.projectappmovil.controller.CreateReportController
-import com.example.projectappmovil.controller.GlobalData
 import com.example.projectappmovil.navegation.AppScreens
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -67,6 +73,7 @@ import com.google.firebase.ktx.Firebase
 @Composable
 fun AllReports(navController: NavHostController) {
     val auth: FirebaseAuth = Firebase.auth
+
     Scaffold(
         bottomBar = {
             NavigationBar {
@@ -119,7 +126,10 @@ fun AllReports(navController: NavHostController) {
                             contentDescription = null,
                             modifier = Modifier.size(30.dp)
                         )
+                        val count = CreateReportController.GlobalNotification.notification.value
+                        Badge(count)
                     }
+
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.DarkGray)
             )
@@ -130,12 +140,34 @@ fun AllReports(navController: NavHostController) {
 }
 
 @Composable
+fun Badge(count: Int) {
+    if (count > 0) {
+        Box(
+            modifier = Modifier
+                .offset(x = 10.dp, y = (-10).dp)
+                .clip(CircleShape)
+                .background(Color.Red)
+                .size(20.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = count.toString(),
+                color = Color.White,
+                fontSize = 12.sp,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(2.dp)
+            )
+        }
+    }
+}
+
+@Composable
 fun LoadImageFromFirestore3(innerPadding: PaddingValues, navController: NavController) {
     val db = Firebase.firestore
     var reports by remember { mutableStateOf<List<Report2>>(emptyList()) }
 
     LaunchedEffect(Unit) {
-        val listenerRegistration = db.collection("reportes")
+        db.collection("reportes")
             .addSnapshotListener { snapshot: QuerySnapshot?, exception: FirebaseFirestoreException? ->
                 if (exception != null) {
                     println("Error listening to Firestore: ${exception.message}")
@@ -153,7 +185,7 @@ fun LoadImageFromFirestore3(innerPadding: PaddingValues, navController: NavContr
 
                     )
                 } ?: emptyList()
-
+                //GlobalNotification.notification.value = newReports.size
                 reports = newReports
             }
     }
@@ -169,7 +201,6 @@ data class Report2(
     val nombre: String,
     val idReport: String
 )
-
 
 @Composable
 fun MyLazyColumn2(reports: List<Report2>, innerPadding: PaddingValues, navController: NavController) {

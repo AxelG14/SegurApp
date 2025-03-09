@@ -208,6 +208,7 @@ fun registro(navController: NavController) {
                         }
                             registerController1.agregarClienteAuth(email, contrasenia)
                             registerController1.agregarClienteFirestore(nombre, ciudad, direccion, email, contrasenia)
+                            nombre = "" ; ciudad = "" ; direccion = "" ; email = "" ; contrasenia = ""
                             coroutineScope.launch {
                                 snackbarHostState.showSnackbar("Registro exitoso")
                             }
