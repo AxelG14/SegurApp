@@ -41,8 +41,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.projectappmovil.controller.CreateReportController
+import com.example.projectappmovil.navegation.AppScreens
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import com.google.firebase.auth.ktx.auth
@@ -52,7 +54,7 @@ import com.google.firebase.ktx.Firebase
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateReport(){
+fun CreateReport(navController: NavController){
     val db = Firebase.firestore
     val auth = Firebase.auth
     val user = auth.currentUser
@@ -60,25 +62,25 @@ fun CreateReport(){
     Scaffold (
         bottomBar = {
             NavigationBar { NavigationBarItem(
-                onClick = {},
+                onClick = {navController.navigate(route = AppScreens.InicioScreen.route)},
                 selected = false,
                 icon = { Icon(imageVector = Icons.Default.Home, contentDescription = null) },
                 label = { Text("MENU") }
             )
                 NavigationBarItem(
-                    onClick = {},
+                    onClick = {navController.navigate(route = AppScreens.AllReportsScreen.route)},
                     selected = false,
                     icon = { Icon(imageVector = Icons.Default.Place, contentDescription = null) },
                     label = { Text("REPORTS") }
                 )
                 NavigationBarItem(
-                    onClick = {},
+                    onClick = {navController.navigate(route = AppScreens.MyReportsScreen.route)},
                     selected = false,
                     icon = { Icon(imageVector = Icons.Default.Create, contentDescription = null) },
                     label = { Text("MINE") }
                 )
                 NavigationBarItem(
-                    onClick = {},
+                    onClick = {navController.navigate(route = AppScreens.ProfileScreen.route)},
                     selected = false,
                     icon = { Icon(imageVector = Icons.Default.Notifications, contentDescription = null) },
                     label = { Text("PROFILE") }

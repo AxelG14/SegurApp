@@ -24,6 +24,8 @@ import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -39,6 +41,8 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -49,11 +53,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
+import com.example.projectappmovil.controller.CreateReportController
+import com.example.projectappmovil.controller.MyReportsController
 import com.example.projectappmovil.navegation.AppScreens
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -68,6 +75,7 @@ fun Reports1(navController: NavController) {
     val auth: FirebaseAuth = Firebase.auth
     val email = auth.currentUser?.email
     val userId = auth.currentUser?.uid
+
     Scaffold(
         bottomBar = {
             NavigationBar {
@@ -99,7 +107,7 @@ fun Reports1(navController: NavController) {
         },
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text("Reportes",
+                title = { Text("Mis Reportes",
                     fontSize = 20.sp
                 ) },
                 navigationIcon = {
@@ -111,7 +119,7 @@ fun Reports1(navController: NavController) {
                 },
                 actions = {
                     SmallFloatingActionButton (
-                        onClick = { },
+                        onClick = { CreateReportController.GlobalNotification.notification.value = 0 },
                         containerColor = Color.White,
                         contentColor = Color.Black
                     ) {
@@ -120,6 +128,9 @@ fun Reports1(navController: NavController) {
                             contentDescription = null,
                             modifier = Modifier.size(30.dp)
                         )
+                        val count = CreateReportController.GlobalNotification.notification.value
+                        Badge(count)
+
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.DarkGray)
@@ -150,7 +161,8 @@ fun LoadImageFromFirestore2(userId: String, innerPadding: PaddingValues) {
                         categoria = document.getString("categoria") ?: "",
                         description = document.getString("descripcion") ?: "",
                         ubication = document.getString("ubicacion") ?: "",
-                        nombre = document.getString("nombre") ?: ""
+                        nombre = document.getString("nombre") ?: "",
+                        idReport = document.getString("idReport") ?: ""
                     )
                 } ?: emptyList()
 
@@ -166,11 +178,17 @@ data class Report(
     val categoria: String,
     val description: String,
     val ubication: String,
-    val nombre: String
+    val nombre: String,
+    val idReport: String
 )
 
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyLazyColumn(reports: List<Report>, innerPadding: PaddingValues) {
+    var showDialog = false
+    val myReport = MyReportsController()
+
     LazyColumn(
         modifier = Modifier
             .padding(innerPadding)
@@ -191,7 +209,7 @@ fun MyLazyColumn(reports: List<Report>, innerPadding: PaddingValues) {
                         modifier = Modifier
                             .fillMaxWidth()
                             .background(color = MaterialTheme.colorScheme.primary)
-                            .padding(10.dp)
+                            .padding(5.dp)
                     ) {
                         Icon(
                             imageVector = Icons.Default.Person,
@@ -221,19 +239,48 @@ fun MyLazyColumn(reports: List<Report>, innerPadding: PaddingValues) {
                     modifier = Modifier
                         .background(color = Color.DarkGray),
                 ) {
-                    Text(text = "Titulo: " + report.title,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 12.sp,
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp))
-                    Text(text = "Categoria: " + report.categoria,
-                        fontSize = 12.sp,
-                        modifier = Modifier.padding(horizontal = 10.dp))
-                    Text(text = "Descripcion: "+report.description,
-                        fontSize = 12.sp,
-                        modifier = Modifier.padding(horizontal = 10.dp))
-                    Text(text = "Ubicacion: "+report.ubication,
-                        fontSize = 12.sp,
-                        modifier = Modifier.padding(horizontal = 10.dp))
+                    var isEditing by remember { mutableStateOf(true) }
+                    var title by remember { mutableStateOf(report.title) }
+                    TextField(
+                        value = title,
+                        onValueChange = { title = it },
+                        readOnly = isEditing,
+                        label = { Text("Titulo") },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 3.dp),
+                        textStyle = TextStyle(fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                    )
+                    var categoria by remember { mutableStateOf(report.categoria) }
+                    TextField(
+                        value = categoria,
+                        onValueChange = { categoria = it },
+                        label = { Text("Categoria") },
+                        readOnly = isEditing,
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        textStyle = TextStyle(fontSize = 12.sp)
+                    )
+                    var description by remember { mutableStateOf(report.description) }
+                    TextField(
+                        value = description,
+                        onValueChange = { description = it },
+                        label = { Text("Descripcion") },
+                        readOnly = isEditing,
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        textStyle = TextStyle(fontSize = 12.sp)
+                    )
+                    var ubication by remember { mutableStateOf(report.ubication) }
+                    TextField(
+                        value = ubication,
+                        onValueChange = { ubication = it },
+                        label = { Text("Ubicacion") },
+                        readOnly = isEditing,
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        textStyle = TextStyle(fontSize = 12.sp)
+                    )
                     Row (
                         modifier = Modifier
                             .padding(10.dp)
@@ -266,23 +313,61 @@ fun MyLazyColumn(reports: List<Report>, innerPadding: PaddingValues) {
                         }
                         Spacer(modifier = Modifier.padding(horizontal = 10.dp))
                         Button(
-                            onClick = {},
+                            onClick = {myReport.deleteReport(report.idReport)
+                                      myReport.deleteImageFromStorage(report.imageUrl!!)},
                         ) {
                             Text(text = "Eliminar")
                         }
-                        Button(
-                            onClick = {},
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.secondary)
+                        if (isEditing) {
+                            Button(
+                                onClick = {
+                                    if (title.isNotEmpty() && categoria.isNotEmpty() && description.isNotEmpty() && ubication.isNotEmpty()) {
+                                        myReport.editReport(report.idReport, title, categoria, description, ubication)
+                                        isEditing = false
+                                    } else {
+                                        showDialog = true
+                                    }
+                                },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.primary
+                                )
                             ) {
-                            Text(text = "Editar")
+                                Text(text = "Guardar")
+                            }
+                        } else {
+                            Button(
+                                onClick = { isEditing = true },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.secondary
+                                )
+                            ) {
+                                Text(text = "Editar")
+                            }
                         }
+                    }
+                    if (showDialog){
+                        BasicAlertDialog(
+                            onDismissRequest = {showDialog = false}
+
+                        ){
+                            Text(text = "Debe llenar todos los campos")
+
+                            Button(
+                                onClick = {showDialog = false}
+                            ) {
+                                Text(text = "Aceptar")
+                            }
+                        }
+
                     }
                 }
             }
         }
     }
 }
+
+
+
 
 
 

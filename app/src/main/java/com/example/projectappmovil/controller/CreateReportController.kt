@@ -51,7 +51,7 @@ class CreateReportController {
     ) {
         val storage = FirebaseStorage.getInstance()
         val storageRef = storage.reference
-        val imageRef = storageRef.child("/users/$userId/images/${UUID.randomUUID()}.jpg")
+        val imageRef = storageRef.child("/$userId/images/${UUID.randomUUID()}.jpg")
 
         val uploadTask = imageRef.putFile(imageUri)
 

@@ -81,7 +81,7 @@ fun Profile(navController: NavController){
                 },
                 actions = {
                     SmallFloatingActionButton (
-                        onClick = { },
+                        onClick = { CreateReportController.GlobalNotification.notification.value = 0 },
                         containerColor = Color.White,
                         contentColor = Color.Black
                     ) {

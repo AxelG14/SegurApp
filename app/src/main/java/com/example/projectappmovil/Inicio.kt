@@ -42,6 +42,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -101,7 +102,7 @@ fun Inicio(navController: NavController){
                 },
                 actions = {
                     SmallFloatingActionButton (
-                        onClick = { },
+                        onClick = { CreateReportController.GlobalNotification.notification.value = 0 },
                         containerColor = Color.White,
                         contentColor = Color.Black
                     ) {
@@ -134,7 +135,9 @@ fun Inicio(navController: NavController){
                         .size(height = 50.dp, width = 300.dp),
                     border = BorderStroke(1.dp, Color.White)
                 ) {
-                    Text("CREAR REPORTE")
+                    Text("CREAR REPORTE",
+                        fontWeight = FontWeight.Bold
+                    )
                 }
             }
         }

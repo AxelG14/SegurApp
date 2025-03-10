@@ -33,7 +33,7 @@ fun AppNavigation() {
             Inicio(navController)
         }
         composable(AppScreens.CreateReportScreen.route) {
-            CreateReport()
+            CreateReport(navController)
         }
         composable(AppScreens.MyReportsScreen.route) {
             Reports1(navController)
