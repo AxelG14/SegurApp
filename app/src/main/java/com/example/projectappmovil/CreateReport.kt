@@ -142,7 +142,7 @@ fun CreateReport(navController: NavController){
                 TextField(
                     value = categoria,
                     onValueChange = { },
-                    readOnly = true, // Hace que el campo sea de solo lectura
+                    readOnly = true,
                     label = { Text("Categoria") },
                     trailingIcon = {
                         ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)

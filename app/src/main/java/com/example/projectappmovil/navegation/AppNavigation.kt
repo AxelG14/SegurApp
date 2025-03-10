@@ -10,10 +10,11 @@ import com.example.projectappmovil.AllReports
 import com.example.projectappmovil.Comments
 import com.example.projectappmovil.Inicio
 import com.example.projectappmovil.CreateReport
+import com.example.projectappmovil.InicioAdmin
 import com.example.projectappmovil.Password
 import com.example.projectappmovil.Profile
 import com.example.projectappmovil.Reports1
-import com.example.projectappmovil.previewLogin
+import com.example.projectappmovil.PreviewLogin
 import com.example.projectappmovil.registro
 
 @Composable
@@ -21,7 +22,7 @@ fun AppNavigation() {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = AppScreens.MainScreen.route) {
         composable(AppScreens.MainScreen.route) {
-            previewLogin(navController)
+            PreviewLogin(navController)
         }
         composable(AppScreens.RegisterScreen.route) {
             registro(navController)
@@ -52,6 +53,9 @@ fun AppNavigation() {
             if (idReport != null) {
                 Comments(navController, idReport)
             }
+        }
+        composable(AppScreens.InicioAdminScreen.route) {
+            InicioAdmin()
         }
 
         }

@@ -3,12 +3,11 @@ package com.example.projectappmovil.controller
 import androidx.navigation.NavController
 import com.example.projectappmovil.navegation.AppScreens
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
-import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
-class LoginController() {
+class LoginController {
     fun iniciarSesion(email: String, password: String, navController: NavController){
         val auth: FirebaseAuth = Firebase.auth
         auth.signInWithEmailAndPassword(email, password)
@@ -19,16 +18,22 @@ class LoginController() {
                     val user = auth.currentUser
                     println("Usuario logueado: ${user?.email}")
                 } else {
+                    inicioSesionAdmin(email, password, navController)
+                }
+            }
+    }
 
-                    try {
-                        throw task.exception ?: Exception("Error desconocido")
-                    } catch (e: FirebaseAuthInvalidCredentialsException) {
-                        println("Error: Credenciales inválidas (correo o contraseña incorrectos).")
-                    } catch (e: FirebaseAuthInvalidUserException) {
-                        println("Error: El usuario no existe.")
-                    } catch (e: Exception) {
-                        println("Error: ${e.message}")
-                    }
+    fun inicioSesionAdmin(email: String, password: String, navController: NavController){
+        val db = Firebase.firestore
+        db.collection("administradores")
+            .whereEqualTo("email", email)
+            .whereEqualTo("contrasenia", password)
+            .get()
+            .addOnSuccessListener { querySnapshot ->
+                if (!querySnapshot.isEmpty) {
+                    navController.navigate(route = AppScreens.InicioAdminScreen.route)
+                } else {
+                    println("Inicio de sesión fallido")
                 }
             }
     }

@@ -31,7 +31,10 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -147,7 +150,7 @@ fun LoadImageFromFirestore2(userId: String, innerPadding: PaddingValues) {
     var reports by remember { mutableStateOf<List<Report>>(emptyList()) }
 
     LaunchedEffect(userId) {
-        val listenerRegistration = db.collection("reportes")
+        db.collection("reportes")
             .whereEqualTo("userId", userId)
             .addSnapshotListener { snapshot: QuerySnapshot?, exception: FirebaseFirestoreException? ->
                 if (exception != null) {
@@ -186,8 +189,9 @@ data class Report(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyLazyColumn(reports: List<Report>, innerPadding: PaddingValues) {
-    var showDialog = false
+    var showDialog by remember { mutableStateOf(false) }
     val myReport = MyReportsController()
+    var showDialog2 by remember { mutableStateOf(false) }
 
     LazyColumn(
         modifier = Modifier
@@ -251,16 +255,43 @@ fun MyLazyColumn(reports: List<Report>, innerPadding: PaddingValues) {
                             .padding(vertical = 3.dp),
                         textStyle = TextStyle(fontWeight = FontWeight.Bold, fontSize = 12.sp)
                     )
+
+                    val categorias =
+                        listOf("Seguridad", "Emergencias", "Infraestructura", "Mascotas", "Comunidad")
                     var categoria by remember { mutableStateOf(report.categoria) }
-                    TextField(
-                        value = categoria,
-                        onValueChange = { categoria = it },
-                        label = { Text("Categoria") },
-                        readOnly = isEditing,
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        textStyle = TextStyle(fontSize = 12.sp)
-                    )
+                    var expanded by remember { mutableStateOf(false) }
+                    ExposedDropdownMenuBox(
+                        expanded = expanded,
+                        onExpandedChange = { expanded = !expanded },
+                        modifier = Modifier.fillMaxWidth(0.9f).padding(vertical = 8.dp)
+                    ){
+                        TextField(
+                            value = categoria,
+                            onValueChange = { categoria = it },
+                            label = { Text("Categoria") },
+                            readOnly = isEditing,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .menuAnchor(),
+                            trailingIcon = {ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)},
+                            textStyle = TextStyle(fontSize = 12.sp)
+                        )
+                        ExposedDropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = { expanded = false }
+                        ) {
+                            categorias.forEach { categoriaItem ->
+                                DropdownMenuItem(
+                                    text = { Text(categoriaItem) },
+                                    onClick = {
+                                        categoria = categoriaItem
+                                        expanded = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+
                     var description by remember { mutableStateOf(report.description) }
                     TextField(
                         value = description,
@@ -318,30 +349,34 @@ fun MyLazyColumn(reports: List<Report>, innerPadding: PaddingValues) {
                         ) {
                             Text(text = "Eliminar")
                         }
+
                         if (isEditing) {
                             Button(
                                 onClick = {
-                                    if (title.isNotEmpty() && categoria.isNotEmpty() && description.isNotEmpty() && ubication.isNotEmpty()) {
-                                        myReport.editReport(report.idReport, title, categoria, description, ubication)
-                                        isEditing = false
-                                    } else {
-                                        showDialog = true
-                                    }
+                                    isEditing = false
                                 },
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = MaterialTheme.colorScheme.primary
-                                )
-                            ) {
-                                Text(text = "Guardar")
-                            }
-                        } else {
-                            Button(
-                                onClick = { isEditing = true },
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = MaterialTheme.colorScheme.secondary
                                 )
                             ) {
                                 Text(text = "Editar")
+                            }
+                        } else {
+                            Button(
+                                onClick = {
+                                    if (title.isNotEmpty() && categoria.isNotEmpty() && description.isNotEmpty() && ubication.isNotEmpty()){
+                                    myReport.editReport(report.idReport, title, categoria, description, ubication)
+                                        showDialog2 = true
+                                        isEditing = true
+                                    } else {
+                                        showDialog = true
+                                    }
+                                          },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.primary
+                                )
+                            ) {
+                                Text(text = "Listo")
                             }
                         }
                     }
@@ -354,6 +389,20 @@ fun MyLazyColumn(reports: List<Report>, innerPadding: PaddingValues) {
 
                             Button(
                                 onClick = {showDialog = false}
+                            ) {
+                                Text(text = "Aceptar")
+                            }
+                        }
+                    }
+                    if (showDialog2){
+                        BasicAlertDialog(
+                            onDismissRequest = {showDialog2 = false}
+
+                        ){
+                            Text(text = "Se actualizo el reporte")
+
+                            Button(
+                                onClick = {showDialog2 = false}
                             ) {
                                 Text(text = "Aceptar")
                             }

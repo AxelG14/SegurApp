@@ -84,17 +84,16 @@ fun body(navController: NavController){
 
         var showErrorDialog by remember { mutableStateOf(false) }
         var showErrorDialog2 by remember { mutableStateOf(false) }
-        var loginController = LoginController()
+        val loginController = LoginController()
         Button(
             onClick = {
                 if (email.isBlank() || password.isBlank()) {
                     showErrorDialog = true
                 } else {
-                    loginController.iniciarSesion(email, password,navController)
+                    loginController.iniciarSesion(email, password, navController)
 
                 }
             },
-
             modifier = Modifier
                 .padding(top = 30.dp)
                 .size(height = 50.dp, width = 250.dp)
@@ -146,7 +145,7 @@ fun body(navController: NavController){
 }
 
 @Composable
-fun previewLogin(navController: NavController){
+fun PreviewLogin(navController: NavController){
     Column (
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
