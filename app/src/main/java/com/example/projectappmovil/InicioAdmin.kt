@@ -30,6 +30,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.projectappmovil.controller.CreateReportController
 import com.example.projectappmovil.navegation.AppScreens
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -53,7 +54,7 @@ fun InicioAdmin(navController: NavController){
                 },
                 actions = {
                     SmallFloatingActionButton(
-                        onClick = { },
+                        onClick = { CreateReportController.GlobalNotification.notification.value = 0 },
                         containerColor = Color.White,
                         contentColor = Color.Black
                     ) {
@@ -63,6 +64,8 @@ fun InicioAdmin(navController: NavController){
                             modifier = Modifier.size(30.dp)
                         )
                     }
+                    val count = CreateReportController.GlobalNotification.notification.value
+                    Badge(count)
                 }
             )
         },
@@ -81,12 +84,11 @@ fun InicioAdmin(navController: NavController){
                     label = { Text("REPORTS") }
                 )
                 NavigationBarItem(
-                    onClick = {},
+                    onClick = {navController.navigate(route = AppScreens.ProfileAdminScreen.route)},
                     selected = false,
                     icon = { Icon(imageVector = Icons.Default.Person, contentDescription = null) },
                     label = { Text("PROFILE") }
                 )
-
             }
         }
 

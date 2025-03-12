@@ -15,6 +15,7 @@ import com.example.projectappmovil.Password
 import com.example.projectappmovil.Profile
 import com.example.projectappmovil.Reports1
 import com.example.projectappmovil.PreviewLogin
+import com.example.projectappmovil.ProfileAdmin
 import com.example.projectappmovil.ReportsAdmin
 import com.example.projectappmovil.registro
 
@@ -60,6 +61,9 @@ fun AppNavigation() {
         }
         composable(AppScreens.ReportsAdminScreen.route) {
             ReportsAdmin(navController)
+        }
+        composable(AppScreens.ProfileAdminScreen.route) {
+            ProfileAdmin(navController)
         }
 
         }

@@ -53,6 +53,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
+import com.example.projectappmovil.controller.CreateReportController
 import com.example.projectappmovil.navegation.AppScreens
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.QuerySnapshot
@@ -80,7 +81,7 @@ fun ReportsAdmin(navController: NavController){
                 },
                 actions = {
                     SmallFloatingActionButton(
-                        onClick = { },
+                        onClick = { CreateReportController.GlobalNotification.notification.value = 0 },
                         containerColor = Color.White,
                         contentColor = Color.Black
                     ) {
@@ -90,13 +91,15 @@ fun ReportsAdmin(navController: NavController){
                             modifier = Modifier.size(30.dp)
                         )
                     }
+                    val count = CreateReportController.GlobalNotification.notification.value
+                    Badge(count)
                 }
             )
         },
         bottomBar = {
             NavigationBar {
                 NavigationBarItem(
-                    onClick = {},
+                    onClick = {navController.navigate(route = AppScreens.InicioAdminScreen.route)},
                     selected = false,
                     icon = { Icon(imageVector = Icons.Default.Home, contentDescription = null) },
                     label = { Text("MENU") }
@@ -108,12 +111,11 @@ fun ReportsAdmin(navController: NavController){
                     label = { Text("REPORTS") }
                 )
                 NavigationBarItem(
-                    onClick = {},
+                    onClick = {navController.navigate(route = AppScreens.ProfileAdminScreen.route)},
                     selected = false,
                     icon = { Icon(imageVector = Icons.Default.Person, contentDescription = null) },
                     label = { Text("PROFILE") }
                 )
-
             }
         }
 
