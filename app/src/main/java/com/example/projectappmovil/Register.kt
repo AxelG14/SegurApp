@@ -41,33 +41,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.projectappmovil.controller.RegisterController
-import com.google.firebase.Firebase
-import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.launch
 
-//Agregar Administradores
-
-fun agregarAdministrador(){
-    val db = Firebase.firestore
-    val admin2 = hashMapOf(
-        "nombre" to "Luis",
-        "ciudad" to "Pereira",
-        "direccion" to "Calle 456",
-        "email" to "luis456@eam.com",
-        "contrasenia" to "456"
-    )
-    db.collection("administradores")
-        .add(admin2)
-        .addOnSuccessListener { documentReference ->
-            println("DocumentSnapshot written with ID: ${documentReference.id}")
-        }
-        .addOnFailureListener{ e ->
-            println("Error adding document $e")
-        }
-}
 
 @Composable
-fun registro(navController: NavController) {
+fun Registro(navController: NavController) {
     var nombre by remember { mutableStateOf("") }
     var ciudad by remember { mutableStateOf("") }
     var direccion by remember { mutableStateOf("") }
@@ -206,8 +184,7 @@ fun registro(navController: NavController) {
                             || email.isBlank() || contrasenia.isBlank()){
                             showErrorDialog = true
                         }
-                            registerController1.agregarClienteAuth(email, contrasenia)
-                            registerController1.agregarClienteFirestore(nombre, ciudad, direccion, email, contrasenia)
+                            registerController1.agregarClienteAuth(nombre, ciudad, direccion, email, contrasenia)
                             nombre = "" ; ciudad = "" ; direccion = "" ; email = "" ; contrasenia = ""
                             coroutineScope.launch {
                                 snackbarHostState.showSnackbar("Registro exitoso")

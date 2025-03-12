@@ -32,7 +32,7 @@ import com.example.projectappmovil.navegation.AppScreens
 
 
 @Composable
-fun imageLogin(){
+fun ImageLogin(){
     Image(
         painter = painterResource(R.drawable.vueloenavion),
         contentDescription = "Imagen Inicio",
@@ -41,7 +41,7 @@ fun imageLogin(){
 }
 
 @Composable
-fun titulo(){
+fun Titulo(){
     Text(
         text = "Bienvenidos Apps Moviles",
         color = MaterialTheme.colorScheme.primary,
@@ -52,7 +52,7 @@ fun titulo(){
 }
 
 @Composable
-fun body(navController: NavController){
+fun Body(navController: NavController){
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -78,7 +78,7 @@ fun body(navController: NavController){
             color = MaterialTheme.colorScheme.primary,
             fontSize = 15.sp,
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.clickable() {navController.navigate(route = AppScreens.ForgotScreen.route)
+            modifier = Modifier.clickable {navController.navigate(route = AppScreens.ForgotScreen.route)
             }
         )
 
@@ -151,10 +151,10 @@ fun PreviewLogin(navController: NavController){
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.height(60.dp))
-        imageLogin()
-        titulo()
+        ImageLogin()
+        Titulo()
         Spacer(modifier = Modifier.height(60.dp))
-        body(navController)
+        Body(navController)
     }
 }
 

@@ -7,6 +7,7 @@ import com.google.firebase.firestore.firestore
 class RegisterController {
 
     fun agregarClienteFirestore(
+        userId: String,
         nombre: String,
         ciudad: String,
         direccion: String,
@@ -19,23 +20,51 @@ class RegisterController {
             "ciudad" to ciudad,
             "direccion" to direccion,
             "email" to email,
-            "contrasenia" to contrasenia
+            "contrasenia" to contrasenia,
+            "rol" to "cliente"
         )
-        db.collection("clientes")
-            .add(cliente)
+        db.collection("usuarios")
+            .document(userId)
+            .set(cliente)
             .addOnSuccessListener { documentReference ->
-                println("DocumentSnapshot written with ID: ${documentReference.id}")
+                println("DocumentSnapshot written with ID: $documentReference")
             }
     }
-    fun agregarClienteAuth(email: String, password: String){
+    fun agregarClienteAuth(nombre: String, ciudad: String, direccion: String, email: String, password: String){
         FirebaseAuth.getInstance()
             .createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
+                    val user = FirebaseAuth.getInstance().currentUser
+                    val userId = user?.uid
+                    if (userId != null) {
+                        agregarClienteFirestore(userId, nombre, ciudad, direccion, email, password)
+                    }
                     println("Registro exitoso")
                 } else {
-//
+                    println("Error en el registro: ${task.exception?.message}")
                 }
         }
     }
+
+//    fun agregarAdministrador(userId: String){
+//        val db = Firebase.firestore
+//        val admin = hashMapOf(
+//            "nombre" to "Luis",
+//            "ciudad" to "Manizales",
+//            "direccion" to "Calle 456",
+//            "email" to "admin@eam.com",
+//            "contrasenia" to "admin123",
+//            "rol" to "admin"
+//        )
+//        db.collection("usuarios")
+//            .document(userId)
+//            .set(admin)
+//            .addOnSuccessListener { documentReference ->
+//                println("DocumentSnapshot written with ID: $documentReference")
+//            }
+//            .addOnFailureListener{ e ->
+//                println("Error adding document $e")
+//            }
+//    }
 }

@@ -16,8 +16,8 @@ import com.example.projectappmovil.Profile
 import com.example.projectappmovil.Reports1
 import com.example.projectappmovil.PreviewLogin
 import com.example.projectappmovil.ProfileAdmin
+import com.example.projectappmovil.Registro
 import com.example.projectappmovil.ReportsAdmin
-import com.example.projectappmovil.registro
 
 @Composable
 fun AppNavigation() {
@@ -27,7 +27,7 @@ fun AppNavigation() {
             PreviewLogin(navController)
         }
         composable(AppScreens.RegisterScreen.route) {
-            registro(navController)
+            Registro(navController)
         }
         composable(AppScreens.ForgotScreen.route) {
             Password(navController)

@@ -39,11 +39,9 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -62,8 +60,6 @@ import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.example.projectappmovil.controller.CreateReportController
 import com.example.projectappmovil.navegation.AppScreens
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.ktx.firestore
@@ -72,8 +68,6 @@ import com.google.firebase.ktx.Firebase
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AllReports(navController: NavHostController) {
-    val auth: FirebaseAuth = Firebase.auth
-
     Scaffold(
         bottomBar = {
             NavigationBar {

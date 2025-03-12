@@ -17,13 +17,13 @@ class ProfileController {
             "email" to correo,
             "contrasenia" to contrasenia
         )
-        db.collection("clientes")
+        db.collection("usuarios")
             .whereEqualTo("email", email)
             .get()
             .addOnSuccessListener { querySnapshot ->
                 if (!querySnapshot.isEmpty) {
                     val documentId = querySnapshot.documents[0].id
-                    db.collection("clientes")
+                    db.collection("usuarios")
                         .document(documentId)
                         .update(data)
                         .addOnSuccessListener {

@@ -8,32 +8,40 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
 class LoginController {
-    fun iniciarSesion(email: String, password: String, navController: NavController){
+    fun iniciarSesion(email: String, password: String, navController: NavController) {
         val auth: FirebaseAuth = Firebase.auth
+        val db = Firebase.firestore
+
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    println("Inicio de sesión exitoso")
-                    navController.navigate(route = AppScreens.InicioScreen.route)
-                    val user = auth.currentUser
-                    println("Usuario logueado: ${user?.email}")
-                } else {
-                    inicioSesionAdmin(email, password, navController)
-                }
-            }
-    }
 
-    fun inicioSesionAdmin(email: String, password: String, navController: NavController){
-        val db = Firebase.firestore
-        db.collection("administradores")
-            .whereEqualTo("email", email)
-            .whereEqualTo("contrasenia", password)
-            .get()
-            .addOnSuccessListener { querySnapshot ->
-                if (!querySnapshot.isEmpty) {
-                    navController.navigate(route = AppScreens.InicioAdminScreen.route)
+                    val userUid = auth.currentUser?.uid
+
+                    if (userUid != null) {
+                        db.collection("usuarios")
+                            .document(userUid)
+                            .get()
+                            .addOnSuccessListener { documentSnapshot ->
+                                if (documentSnapshot.exists()) {
+                                    val rol = documentSnapshot.getString("rol")
+
+                                    when (rol) {
+                                        "admin" -> navController.navigate(route = AppScreens.InicioAdminScreen.route)
+                                        else -> navController.navigate(route = AppScreens.InicioScreen.route)
+                                    }
+                                } else {
+                                    println("El usuario no existe en Firestore")
+                                }
+                            }
+                            .addOnFailureListener { exception ->
+                                println("Error al obtener el documento del usuario: ${exception.message}")
+                            }
+                    } else {
+                        println("No se pudo obtener el UID del usuario")
+                    }
                 } else {
-                    println("Inicio de sesión fallido")
+                    println("Error en el inicio de sesión: ${task.exception?.message}")
                 }
             }
     }
