@@ -1,24 +1,21 @@
-
 package com.example.projectappmovil
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.MailOutline
@@ -26,6 +23,8 @@ import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -39,31 +38,22 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
-import com.example.projectappmovil.controller.CreateReportController
 import com.example.projectappmovil.navegation.AppScreens
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.ktx.firestore
@@ -71,43 +61,16 @@ import com.google.firebase.ktx.Firebase
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AllReports(navController: NavHostController) {
-    val auth: FirebaseAuth = Firebase.auth
-
-    Scaffold(
-        bottomBar = {
-            NavigationBar {
-                NavigationBarItem(
-                    onClick = {navController.navigate(route = AppScreens.InicioScreen.route)},
-                    selected = false,
-                    icon = { Icon(imageVector = Icons.Default.Home, contentDescription = null) },
-                    label = { Text("MENU") }
-                )
-                NavigationBarItem(
-                    onClick = {navController.navigate(route = AppScreens.AllReportsScreen.route)},
-                    selected = true,
-                    icon = { Icon(imageVector = Icons.Default.Place, contentDescription = null) },
-                    label = { Text("REPORTS") }
-                )
-                NavigationBarItem(
-                    onClick = {navController.navigate(route = AppScreens.MyReportsScreen.route)},
-                    selected = false,
-                    icon = { Icon(imageVector = Icons.Default.Create, contentDescription = null) },
-                    label = { Text("MINE") }
-                )
-                NavigationBarItem(
-                    onClick = {navController.navigate(route = AppScreens.ProfileScreen.route)},
-                    selected = false,
-                    icon = { Icon(imageVector = Icons.Default.Person, contentDescription = null)},
-                    label = { Text("PROFILE") }
-                )
-            }
-        },
+fun ReportsAdmin(navController: NavController){
+    Scaffold (
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text("Reportes",
-                    fontSize = 20.sp
-                ) },
+                title = {
+                    Text(
+                        "REPORTES",
+                        fontSize = 20.sp
+                    )
+                },
                 navigationIcon = {
                     Image(
                         painter = painterResource(R.drawable.vueloenavion),
@@ -116,8 +79,8 @@ fun AllReports(navController: NavHostController) {
                     )
                 },
                 actions = {
-                    SmallFloatingActionButton (
-                        onClick = { CreateReportController.GlobalNotification.notification.value = 0 },
+                    SmallFloatingActionButton(
+                        onClick = { },
                         containerColor = Color.White,
                         contentColor = Color.Black
                     ) {
@@ -126,43 +89,42 @@ fun AllReports(navController: NavHostController) {
                             contentDescription = null,
                             modifier = Modifier.size(30.dp)
                         )
-                        val count = CreateReportController.GlobalNotification.notification.value
-                        Badge(count)
                     }
-
-                },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.DarkGray)
+                }
             )
+        },
+        bottomBar = {
+            NavigationBar {
+                NavigationBarItem(
+                    onClick = {},
+                    selected = false,
+                    icon = { Icon(imageVector = Icons.Default.Home, contentDescription = null) },
+                    label = { Text("MENU") }
+                )
+                NavigationBarItem(
+                    onClick = {},
+                    selected = true,
+                    icon = { Icon(imageVector = Icons.Default.Create, contentDescription = null) },
+                    label = { Text("REPORTS") }
+                )
+                NavigationBarItem(
+                    onClick = {},
+                    selected = false,
+                    icon = { Icon(imageVector = Icons.Default.Person, contentDescription = null) },
+                    label = { Text("PROFILE") }
+                )
+
+            }
         }
+
     ) { innerPadding ->
-        LoadImageFromFirestore3(innerPadding, navController)
+        LoadImage(innerPadding, navController)
+
     }
 }
 
 @Composable
-fun Badge(count: Int) {
-    if (count > 0) {
-        Box(
-            modifier = Modifier
-                .offset(x = 10.dp, y = (-10).dp)
-                .clip(CircleShape)
-                .background(Color.Red)
-                .size(20.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = count.toString(),
-                color = Color.White,
-                fontSize = 12.sp,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(2.dp)
-            )
-        }
-    }
-}
-
-@Composable
-fun LoadImageFromFirestore3(innerPadding: PaddingValues, navController: NavController) {
+fun LoadImage(innerPadding: PaddingValues, navController: NavController) {
     val db = Firebase.firestore
     var reports by remember { mutableStateOf<List<Report2>>(emptyList()) }
 
@@ -188,21 +150,11 @@ fun LoadImageFromFirestore3(innerPadding: PaddingValues, navController: NavContr
                 reports = newReports
             }
     }
-    MyLazyColumn2(reports = reports, innerPadding, navController)
+    ListReports(reports = reports, innerPadding, navController)
 }
 
-data class Report2(
-    val imageUrl: String?,
-    val title: String,
-    val categoria: String,
-    val description: String,
-    val ubication: String,
-    val nombre: String,
-    val idReport: String
-)
-
 @Composable
-fun MyLazyColumn2(reports: List<Report2>, innerPadding: PaddingValues, navController: NavController) {
+fun ListReports(reports: List<Report2>, innerPadding: PaddingValues, navController: NavController) {
     LazyColumn(
         modifier = Modifier
             .padding(innerPadding)
@@ -271,19 +223,8 @@ fun MyLazyColumn2(reports: List<Report2>, innerPadding: PaddingValues, navContro
                         modifier = Modifier
                             .padding(horizontal = 10.dp, vertical = 5.dp)
                             .fillMaxSize(),
-                        horizontalArrangement = Arrangement.End
+                        horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
-                        IconButton(
-                            onClick = {},
-                            colors = IconButtonDefaults.iconButtonColors(Color.Transparent)
-                        ){
-                            Icon(
-                                imageVector = Icons.Default.Star,
-                                contentDescription = null,
-                                tint = Color.White,
-                                modifier = Modifier.size(25.dp)
-                            )
-                        }
                         IconButton(
                             onClick = {navController.navigate(route = AppScreens.CommentsScreen.createRoute(report.idReport))},
                             colors = IconButtonDefaults.iconButtonColors(Color.Transparent)
@@ -293,8 +234,25 @@ fun MyLazyColumn2(reports: List<Report2>, innerPadding: PaddingValues, navContro
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(25.dp)
-
                             )
+                        }
+                        Button(
+                            onClick = {},
+
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Check,
+                                contentDescription = null,
+                                tint = Color.Black,
+                                modifier = Modifier.size(25.dp)
+                            )
+                            Text(text = "Verificar")
+                        }
+                        Button(
+                            onClick = {},
+                            colors = ButtonDefaults.buttonColors(Color.Red)
+                        ) {
+                            Text(text = "Rechazar")
                         }
                     }
                 }
@@ -302,8 +260,3 @@ fun MyLazyColumn2(reports: List<Report2>, innerPadding: PaddingValues, navContro
         }
     }
 }
-
-
-
-
-

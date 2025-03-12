@@ -140,12 +140,12 @@ fun Reports1(navController: NavController) {
             )
         }
     ) { innerPadding ->
-        LoadImageFromFirestore2(userId!!, innerPadding)
+        LoadImageFromFirestore2(userId!!, innerPadding, navController)
     }
 }
 
 @Composable
-fun LoadImageFromFirestore2(userId: String, innerPadding: PaddingValues) {
+fun LoadImageFromFirestore2(userId: String, innerPadding: PaddingValues, navController: NavController) {
     val db = Firebase.firestore
     var reports by remember { mutableStateOf<List<Report>>(emptyList()) }
 
@@ -172,7 +172,7 @@ fun LoadImageFromFirestore2(userId: String, innerPadding: PaddingValues) {
                 reports = newReports
             }
     }
-    MyLazyColumn(reports = reports, innerPadding)
+    MyLazyColumn(reports = reports, innerPadding, navController)
 }
 
 data class Report(
@@ -188,7 +188,7 @@ data class Report(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyLazyColumn(reports: List<Report>, innerPadding: PaddingValues) {
+fun MyLazyColumn(reports: List<Report>, innerPadding: PaddingValues, navController: NavController) {
     var showDialog by remember { mutableStateOf(false) }
     val myReport = MyReportsController()
     var showDialog2 by remember { mutableStateOf(false) }
@@ -330,7 +330,7 @@ fun MyLazyColumn(reports: List<Report>, innerPadding: PaddingValues) {
                             )
                         }
                         IconButton(
-                            onClick = {},
+                            onClick = {navController.navigate(route = AppScreens.CommentsScreen.route + "/${report.idReport}")},
 
                             colors = IconButtonDefaults.iconButtonColors(Color.Transparent)
                         ) {

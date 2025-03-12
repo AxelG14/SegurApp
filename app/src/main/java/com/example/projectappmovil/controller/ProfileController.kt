@@ -32,7 +32,6 @@ class ProfileController {
                                     ?.addOnSuccessListener {
                                         println("Email verificado")
                                     }
-
                             }
                             if (contrasenia.isNotEmpty()){
                                 user?.updatePassword(contrasenia)

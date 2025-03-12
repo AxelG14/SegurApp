@@ -13,4 +13,6 @@ open class AppScreens(val route: String) {
         fun createRoute(idReport: String) = "comments_screen/$idReport"
     }
     object InicioAdminScreen : AppScreens("inicioAdmin_screen")
+    object ReportsAdminScreen : AppScreens("reportsAdmin_screen")
+
 }
