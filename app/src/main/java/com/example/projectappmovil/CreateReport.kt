@@ -113,7 +113,7 @@ fun CreateReport(navController: NavController){
             var nombre by remember { mutableStateOf("") }
 
             LaunchedEffect(user?.email) {
-                db.collection("clientes")
+                db.collection("usuarios")
                     .whereEqualTo("email", user?.email)
                     .get()
                     .addOnSuccessListener { querySnapshot ->
@@ -185,7 +185,6 @@ fun CreateReport(navController: NavController){
             Spacer(modifier = Modifier.height(30.dp))
 
             var imageUri by remember { mutableStateOf<Uri?>(null) }
-            //val context = LocalContext.current
 
             val launcher = rememberLauncherForActivityResult(
                 contract = ActivityResultContracts.GetContent(),
@@ -232,13 +231,7 @@ fun CreateReport(navController: NavController){
                         if (userId != null && imageUri != null && email != null) {
                             imageUri?.let { uri ->
                                 createReportController.saveReportImageToFirebaseStorage(
-                                    userId,
-                                    titulo,
-                                    categoria,
-                                    descripcion,
-                                    ubicacion,
-                                    uri,
-                                    nombre
+                                    userId, titulo, categoria, descripcion, ubicacion, uri, nombre
                                 )
                                 showDialog2 = true
                                 titulo = ""

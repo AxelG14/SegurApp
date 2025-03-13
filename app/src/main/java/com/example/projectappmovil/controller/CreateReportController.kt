@@ -21,7 +21,8 @@ class CreateReportController {
             "ubicacion" to ubicacion,
             "imageUrl" to imageUrl,
             "nombre" to name,
-            "userId" to userId
+            "userId" to userId,
+            "check" to false
         )
         db.collection("reportes")
             .add(report)
@@ -31,13 +32,14 @@ class CreateReportController {
                 db.collection("reportes")
                     .document(id)
                     .update("idReport", id)
-                GlobalNotification.notification.value += 1
+                GlobalData.notification.value += 1
 
             }
     }
 
-    object GlobalNotification {
+    object GlobalData {
         val notification =  mutableStateOf(0)
+        val check = mutableStateOf(false)
     }
 
     fun saveReportImageToFirebaseStorage(

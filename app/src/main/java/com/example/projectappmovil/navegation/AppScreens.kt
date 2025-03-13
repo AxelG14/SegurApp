@@ -15,5 +15,6 @@ open class AppScreens(val route: String) {
     object InicioAdminScreen : AppScreens("inicioAdmin_screen")
     object ReportsAdminScreen : AppScreens("reportsAdmin_screen")
     object ProfileAdminScreen : AppScreens("profileAdmin_screen")
+    object NotificationScreen : AppScreens("notification_screen")
 
 }

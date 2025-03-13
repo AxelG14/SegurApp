@@ -26,6 +26,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -51,6 +52,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.projectappmovil.controller.CreateReportController
+import com.example.projectappmovil.controller.ReportsAdminController
 import com.example.projectappmovil.navegation.AppScreens
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.QuerySnapshot
@@ -78,7 +80,7 @@ fun ReportsAdmin(navController: NavController){
                 },
                 actions = {
                     SmallFloatingActionButton(
-                        onClick = { CreateReportController.GlobalNotification.notification.value = 0 },
+                        onClick = { CreateReportController.GlobalData.notification.value = 0 },
                         containerColor = Color.White,
                         contentColor = Color.Black
                     ) {
@@ -87,9 +89,9 @@ fun ReportsAdmin(navController: NavController){
                             contentDescription = null,
                             modifier = Modifier.size(30.dp)
                         )
+                        val count = CreateReportController.GlobalData.notification.value
+                        Badge(count)
                     }
-                    val count = CreateReportController.GlobalNotification.notification.value
-                    Badge(count)
                 }
             )
         },
@@ -142,7 +144,8 @@ fun LoadImage(innerPadding: PaddingValues, navController: NavController) {
                         description = document.getString("descripcion") ?: "",
                         ubication = document.getString("ubicacion") ?: "",
                         nombre = document.getString("nombre") ?: "",
-                        idReport = document.getString("idReport") ?: ""
+                        idReport = document.getString("idReport") ?: "",
+                        check = document.getBoolean("check") ?: false
 
                     )
                 } ?: emptyList()
@@ -167,7 +170,7 @@ fun ListReports(reports: List<Report2>, innerPadding: PaddingValues, navControll
                     .padding(vertical = 5.dp)
                     .border(1.dp, Color.White, shape = MaterialTheme.shapes.medium)
                     .fillMaxWidth(),
-                colors = CardDefaults.cardColors(Color.Gray)
+                colors = CardDefaults.cardColors(Color.DarkGray)
 
             ) {
                 Column {
@@ -203,24 +206,36 @@ fun ListReports(reports: List<Report2>, innerPadding: PaddingValues, navControll
                 }
                 Column (
                     modifier = Modifier
-                        .background(color = Color.DarkGray),
+                        .padding(horizontal = 10.dp, vertical = 5.dp)
                 ) {
                     Text(text = "Titulo: " + report.title,
                         fontWeight = FontWeight.Bold,
                         fontSize = 12.sp,
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp))
+                        )
                     Text(text = "Categoria: " + report.categoria,
                         fontSize = 12.sp,
-                        modifier = Modifier.padding(horizontal = 10.dp))
+                        )
                     Text(text = "Descripcion: "+report.description,
                         fontSize = 12.sp,
-                        modifier = Modifier.padding(horizontal = 10.dp))
+                        )
                     Text(text = "Ubicacion: "+report.ubication,
                         fontSize = 12.sp,
-                        modifier = Modifier.padding(horizontal = 10.dp))
+                        )
+                    Row (
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End
+                    ){
+                        Text("Verificado:",
+                            modifier = Modifier
+                                .padding(top = 12.dp)
+                        )
+                        Checkbox(
+                            checked = report.check,
+                            onCheckedChange = {},
+                        )
+                    }
                     Row (
                         modifier = Modifier
-                            .padding(horizontal = 10.dp, vertical = 5.dp)
                             .fillMaxSize(),
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
@@ -235,17 +250,18 @@ fun ListReports(reports: List<Report2>, innerPadding: PaddingValues, navControll
                                 modifier = Modifier.size(25.dp)
                             )
                         }
+                        val check = ReportsAdminController()
                         Button(
-                            onClick = {},
+                            onClick = { check.updateCheck(report.idReport) },
 
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Check,
                                 contentDescription = null,
                                 tint = Color.Black,
-                                modifier = Modifier.size(25.dp)
+                                modifier = Modifier.size(20.dp)
                             )
-                            Text(text = "Verificar")
+                            Text(text = "Verificar:")
                         }
                         Button(
                             onClick = {},

@@ -29,6 +29,7 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -111,7 +112,8 @@ fun AllReports(navController: NavHostController) {
                 },
                 actions = {
                     SmallFloatingActionButton (
-                        onClick = { CreateReportController.GlobalNotification.notification.value = 0 },
+                        onClick = { navController.navigate(route = AppScreens.NotificationScreen.route)
+                            CreateReportController.GlobalData.notification.value = 0 },
                         containerColor = Color.White,
                         contentColor = Color.Black
                     ) {
@@ -120,7 +122,7 @@ fun AllReports(navController: NavHostController) {
                             contentDescription = null,
                             modifier = Modifier.size(30.dp)
                         )
-                        val count = CreateReportController.GlobalNotification.notification.value
+                        val count = CreateReportController.GlobalData.notification.value
                         Badge(count)
                     }
 
@@ -175,7 +177,8 @@ fun LoadImageFromFirestore3(innerPadding: PaddingValues, navController: NavContr
                         description = document.getString("descripcion") ?: "",
                         ubication = document.getString("ubicacion") ?: "",
                         nombre = document.getString("nombre") ?: "",
-                        idReport = document.getString("idReport") ?: ""
+                        idReport = document.getString("idReport") ?: "",
+                        check = document.getBoolean("check") ?: false
 
                     )
                 } ?: emptyList()
@@ -192,7 +195,8 @@ data class Report2(
     val description: String,
     val ubication: String,
     val nombre: String,
-    val idReport: String
+    val idReport: String,
+    val check: Boolean
 )
 
 @Composable
@@ -287,9 +291,18 @@ fun MyLazyColumn2(reports: List<Report2>, innerPadding: PaddingValues, navContro
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(25.dp)
-
                             )
                         }
+                        Text("Verificado:",
+                            modifier = Modifier
+                                .padding(top = 12.dp, start = 7.dp)
+                        )
+                        Checkbox(
+                            checked = report.check,
+                            onCheckedChange = {},
+
+                        )
+
                     }
                 }
             }

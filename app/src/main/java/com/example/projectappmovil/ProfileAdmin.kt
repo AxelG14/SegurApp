@@ -75,7 +75,7 @@ fun ProfileAdmin(navController: NavController){
                 },
                 actions = {
                     SmallFloatingActionButton (
-                        onClick = { CreateReportController.GlobalNotification.notification.value = 0 },
+                        onClick = { CreateReportController.GlobalData.notification.value = 0 },
                         containerColor = Color.White,
                         contentColor = Color.Black
                     ) {
@@ -84,7 +84,7 @@ fun ProfileAdmin(navController: NavController){
                             contentDescription = null,
                             modifier = Modifier.size(30.dp)
                         )
-                        val count = CreateReportController.GlobalNotification.notification.value
+                        val count = CreateReportController.GlobalData.notification.value
                         Badge(count)
                     }
                 },
