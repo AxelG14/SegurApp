@@ -5,7 +5,7 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 
 class MyReportsController {
-    fun deleteReport(reportId: String) {
+    fun deleteReport(reportId: String, imageUrl: String) {
         val db = Firebase.firestore
         db.collection("reportes")
             .document(reportId)
@@ -16,6 +16,7 @@ class MyReportsController {
             .addOnFailureListener { e ->
                 println("Error al eliminar el reporte: $e")
             }
+        deleteImageFromStorage(imageUrl)
     }
 
     fun deleteImageFromStorage(imageUrl: String) {

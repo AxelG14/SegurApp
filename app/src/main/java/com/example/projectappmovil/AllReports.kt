@@ -302,7 +302,6 @@ fun MyLazyColumn2(reports: List<Report2>, innerPadding: PaddingValues, navContro
                             onCheckedChange = {},
 
                         )
-
                     }
                 }
             }

@@ -223,8 +223,9 @@ fun ProfileAdmin(navController: NavController){
             ) {
                 Text(text = "CERRAR SESION")
             }
+            val delete = ProfileController()
             Button(
-                onClick = { },
+                onClick = { delete.deleteProfile(user!!.uid) },
                 modifier = Modifier.fillMaxWidth(0.6f),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.Red,

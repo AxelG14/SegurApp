@@ -230,8 +230,14 @@ fun Profile(navController: NavController){
             ) {
                 Text(text = "CERRAR SESION")
             }
+            val delete = ProfileController()
             Button(
-                onClick = { },
+                onClick = {
+                    if (user != null) {
+                        delete.deleteProfile(user.uid)
+                        navController.navigate(route = AppScreens.MainScreen.route)
+                    }
+                },
                 modifier = Modifier.fillMaxWidth(0.6f),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.Red,

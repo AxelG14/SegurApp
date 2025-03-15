@@ -342,8 +342,7 @@ fun MyLazyColumn(reports: List<Report>, innerPadding: PaddingValues, navControll
                         }
                         Spacer(modifier = Modifier.padding(horizontal = 10.dp))
                         Button(
-                            onClick = {myReport.deleteReport(report.idReport)
-                                      myReport.deleteImageFromStorage(report.imageUrl!!)},
+                            onClick = {myReport.deleteReport(report.idReport, report.imageUrl!!)},
                         ) {
                             Text(text = "Eliminar")
                         }

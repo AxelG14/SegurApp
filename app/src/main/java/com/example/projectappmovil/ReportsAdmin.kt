@@ -52,6 +52,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.projectappmovil.controller.CreateReportController
+import com.example.projectappmovil.controller.MyReportsController
 import com.example.projectappmovil.controller.ReportsAdminController
 import com.example.projectappmovil.navegation.AppScreens
 import com.google.firebase.firestore.FirebaseFirestoreException
@@ -261,13 +262,14 @@ fun ListReports(reports: List<Report2>, innerPadding: PaddingValues, navControll
                                 tint = Color.Black,
                                 modifier = Modifier.size(20.dp)
                             )
-                            Text(text = "Verificar:")
+                            Text(text = "Verificar")
                         }
+                        val delete = MyReportsController()
                         Button(
-                            onClick = {},
+                            onClick = {delete.deleteReport(report.idReport, report.imageUrl!!)},
                             colors = ButtonDefaults.buttonColors(Color.Red)
                         ) {
-                            Text(text = "Rechazar")
+                            Text(text = "Eliminar")
                         }
                     }
                 }

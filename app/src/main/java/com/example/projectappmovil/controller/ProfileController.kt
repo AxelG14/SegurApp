@@ -1,13 +1,15 @@
 package com.example.projectappmovil.controller
 
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
 class ProfileController {
+    val db = Firebase.firestore
+    val auth = Firebase.auth
+
     fun udpateInfo(email: String, nombre: String, ciudad: String, direccion: String, correo: String, contrasenia: String){
-        val db = Firebase.firestore
-        val auth = Firebase.auth
         val user = auth.currentUser
 
         val data = mapOf(
@@ -44,7 +46,22 @@ class ProfileController {
             }
     }
     fun signOut(){
-        val auth = Firebase.auth
         auth.signOut()
     }
+
+    fun deleteProfile(userId: String){
+        val user: FirebaseUser? = auth.currentUser
+        if (user != null) {
+            user.delete()
+                .addOnSuccessListener {
+                        db.collection("usuarios")
+                            .document(userId)
+                            .delete()
+                        println("Usuario eliminado exitosamente")
+
+                }
+                    println("Usuario eliminado exitosamente")
+                }
+    }
 }
+
