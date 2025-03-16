@@ -60,6 +60,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
+import com.example.projectappmovil.controller.CommentController
 import com.example.projectappmovil.controller.CreateReportController
 import com.example.projectappmovil.controller.MyReportsController
 import com.example.projectappmovil.navegation.AppScreens
@@ -129,9 +130,6 @@ fun Reports1(navController: NavController) {
                             contentDescription = null,
                             modifier = Modifier.size(30.dp)
                         )
-                        val count = CreateReportController.GlobalData.notification.value
-                        Badge(count)
-
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.DarkGray)
@@ -328,7 +326,7 @@ fun MyLazyColumn(reports: List<Report>, innerPadding: PaddingValues, navControll
                             )
                         }
                         IconButton(
-                            onClick = {navController.navigate(route = AppScreens.CommentsScreen.route + "/${report.idReport}")},
+                            onClick = {navController.navigate(route = AppScreens.CommentsScreen.createRoute(report.idReport))},
 
                             colors = IconButtonDefaults.iconButtonColors(Color.Transparent)
                         ) {
@@ -337,7 +335,6 @@ fun MyLazyColumn(reports: List<Report>, innerPadding: PaddingValues, navControll
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(25.dp)
-
                             )
                         }
                         Spacer(modifier = Modifier.padding(horizontal = 10.dp))

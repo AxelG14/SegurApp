@@ -51,6 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
+import com.example.projectappmovil.controller.CommentController
 import com.example.projectappmovil.controller.CreateReportController
 import com.example.projectappmovil.controller.MyReportsController
 import com.example.projectappmovil.controller.ReportsAdminController
@@ -90,8 +91,6 @@ fun ReportsAdmin(navController: NavController){
                             contentDescription = null,
                             modifier = Modifier.size(30.dp)
                         )
-                        val count = CreateReportController.GlobalData.notification.value
-                        Badge(count)
                     }
                 }
             )
@@ -146,7 +145,8 @@ fun LoadImage(innerPadding: PaddingValues, navController: NavController) {
                         ubication = document.getString("ubicacion") ?: "",
                         nombre = document.getString("nombre") ?: "",
                         idReport = document.getString("idReport") ?: "",
-                        check = document.getBoolean("check") ?: false
+                        check = document.getBoolean("check") ?: false,
+                        countMessages = document.getLong("countMessages")?.toInt() ?: 0
 
                     )
                 } ?: emptyList()
@@ -250,6 +250,7 @@ fun ListReports(reports: List<Report2>, innerPadding: PaddingValues, navControll
                                 tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(25.dp)
                             )
+
                         }
                         val check = ReportsAdminController()
                         Button(

@@ -49,6 +49,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.projectappmovil.controller.CommentController
+import com.example.projectappmovil.controller.CreateReportController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestoreException
@@ -72,7 +73,7 @@ fun Comments(navController: NavHostController, idReport1: String) {
                 var nombre by remember { mutableStateOf("") }
 
                 LaunchedEffect(user?.email) {
-                    db.collection("clientes")
+                    db.collection("usuarios")
                         .whereEqualTo("email", user?.email)
                         .get()
                         .addOnSuccessListener { querySnapshot ->
@@ -108,17 +109,21 @@ fun Comments(navController: NavHostController, idReport1: String) {
                             )
                         }
                     )
+                    val updateCount = CreateReportController()
                     val save = CommentController()
                     var showDialog by remember { mutableStateOf(false) }
                     var showDialog2 by remember { mutableStateOf(false) }
                     IconButton(
-                        onClick = { if (comentario.isEmpty()) {
+                        onClick = {
+                            if (comentario.isEmpty()) {
                             showDialog = true
                         } else {
                             save.saveComment(nombre, comentario, userId!!, idReport1)
                             comentario = ""
                             showDialog2 = true
-                        }},
+                        }
+                            updateCount.updateCountMessage(idReport1)},
+
                         colors = IconButtonDefaults.iconButtonColors(
                             containerColor = Color.White)
                     ) {
@@ -158,9 +163,7 @@ fun Comments(navController: NavHostController, idReport1: String) {
                             }
                         )
                     }
-
                 }
-
             }
         },
         topBar = {
@@ -227,6 +230,7 @@ fun LoadComments(innerPadding: PaddingValues, idReport: String) {
                     )
                 } ?: emptyList()
 
+                CommentController.GlobalData2.countMessages = newComment.size
                 comment = newComment
             }
     }

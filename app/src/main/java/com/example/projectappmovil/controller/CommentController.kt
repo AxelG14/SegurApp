@@ -24,4 +24,8 @@ class CommentController {
                 println("DocumentSnapshot written with ID: ${documentReference.id}")
             }
     }
+    object GlobalData2{
+        var countMessages = 0
+    }
 }
+

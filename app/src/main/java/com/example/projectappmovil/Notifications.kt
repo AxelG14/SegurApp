@@ -81,7 +81,8 @@ fun LoadReports(innerPadding: PaddingValues) {
                         ubication = document.getString("ubicacion") ?: "",
                         nombre = document.getString("nombre") ?: "",
                         idReport = document.getString("idReport") ?: "",
-                        check = document.getBoolean("check") ?: false
+                        check = document.getBoolean("check") ?: false,
+                        countMessages = document.getLong("countMessages")?.toInt() ?: 0
 
                     )
                 } ?: emptyList()

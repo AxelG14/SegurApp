@@ -4,11 +4,13 @@ package com.example.projectappmovil
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -26,6 +28,8 @@ import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -59,6 +63,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
+import com.example.projectappmovil.controller.CommentController
 import com.example.projectappmovil.controller.CreateReportController
 import com.example.projectappmovil.navegation.AppScreens
 import com.google.firebase.firestore.FirebaseFirestoreException
@@ -122,8 +127,7 @@ fun AllReports(navController: NavHostController) {
                             contentDescription = null,
                             modifier = Modifier.size(30.dp)
                         )
-                        val count = CreateReportController.GlobalData.notification.value
-                        Badge(count)
+
                     }
 
                 },
@@ -135,15 +139,17 @@ fun AllReports(navController: NavHostController) {
     }
 }
 
+
 @Composable
-fun Badge(count: Int) {
+fun Badges(count: Int) {
     if (count > 0) {
         Box(
             modifier = Modifier
-                .offset(x = 10.dp, y = (-10).dp)
+                .padding(bottom = 2.dp)
+                .offset(x = 9.dp, y = (-9).dp)
                 .clip(CircleShape)
                 .background(Color.Red)
-                .size(20.dp),
+                .size(15.dp),
             contentAlignment = Alignment.Center
         ) {
             Text(
@@ -151,7 +157,6 @@ fun Badge(count: Int) {
                 color = Color.White,
                 fontSize = 12.sp,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.padding(2.dp)
             )
         }
     }
@@ -178,7 +183,8 @@ fun LoadImageFromFirestore3(innerPadding: PaddingValues, navController: NavContr
                         ubication = document.getString("ubicacion") ?: "",
                         nombre = document.getString("nombre") ?: "",
                         idReport = document.getString("idReport") ?: "",
-                        check = document.getBoolean("check") ?: false
+                        check = document.getBoolean("check") ?: false,
+                        countMessages = document.getLong("countMessages")?.toInt() ?: 0
 
                     )
                 } ?: emptyList()
@@ -196,7 +202,8 @@ data class Report2(
     val ubication: String,
     val nombre: String,
     val idReport: String,
-    val check: Boolean
+    val check: Boolean,
+    val countMessages: Int
 )
 
 @Composable
@@ -273,7 +280,7 @@ fun MyLazyColumn2(reports: List<Report2>, innerPadding: PaddingValues, navContro
                     ) {
                         IconButton(
                             onClick = {},
-                            colors = IconButtonDefaults.iconButtonColors(Color.Transparent)
+                            colors = IconButtonDefaults.iconButtonColors(Color.Transparent),
                         ){
                             Icon(
                                 imageVector = Icons.Default.Star,
@@ -282,26 +289,33 @@ fun MyLazyColumn2(reports: List<Report2>, innerPadding: PaddingValues, navContro
                                 modifier = Modifier.size(25.dp)
                             )
                         }
+
                         IconButton(
                             onClick = {navController.navigate(route = AppScreens.CommentsScreen.createRoute(report.idReport))},
                             colors = IconButtonDefaults.iconButtonColors(Color.Transparent)
-                        ) {
+                        ){
                             Icon(
                                 imageVector = Icons.Default.MailOutline,
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(25.dp)
                             )
+                            Badges(report.countMessages)
                         }
-                        Text("Verificado:",
-                            modifier = Modifier
-                                .padding(top = 12.dp, start = 7.dp)
-                        )
-                        Checkbox(
-                            checked = report.check,
-                            onCheckedChange = {},
 
-                        )
+
+                        Row {
+                            Text("Verificado",
+                                modifier = Modifier
+                                    .padding(top = 12.dp, start = 7.dp)
+                            )
+                            Checkbox(
+                                checked = report.check,
+                                onCheckedChange = {},
+
+                                )
+                        }
+
                     }
                 }
             }

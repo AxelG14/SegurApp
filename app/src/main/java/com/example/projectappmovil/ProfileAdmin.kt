@@ -84,8 +84,6 @@ fun ProfileAdmin(navController: NavController){
                             contentDescription = null,
                             modifier = Modifier.size(30.dp)
                         )
-                        val count = CreateReportController.GlobalData.notification.value
-                        Badge(count)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.DarkGray)
