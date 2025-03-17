@@ -45,9 +45,9 @@ fun InicioAdmin(navController: NavController){
                 },
                 navigationIcon = {
                     Image(
-                        painter = painterResource(R.drawable.vueloenavion),
+                        painter = painterResource(R.drawable.logo),
                         contentDescription = null,
-                        modifier = Modifier.size(50.dp)
+                        modifier = Modifier.size(70.dp)
                     )
                 },
                 actions = {
@@ -105,6 +105,11 @@ fun Menu(innerPadding: PaddingValues){
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ){
+        Image(
+            painter = painterResource(R.drawable.logo),
+            contentDescription = null,
+            modifier = Modifier.size(400.dp)
+        )
         Text(text = "BIENVENIDO ADMINISTRADOR",
             modifier = Modifier.padding(),
             fontSize = 25.sp

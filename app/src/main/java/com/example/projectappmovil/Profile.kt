@@ -51,6 +51,10 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
+object GlobalCount{
+    var countNotification = mutableStateOf(0)
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Profile(navController: NavController){
@@ -68,9 +72,9 @@ fun Profile(navController: NavController){
                 ) },
                 navigationIcon = {
                     Image(
-                        painter = painterResource(R.drawable.vueloenavion),
+                        painter = painterResource(R.drawable.logo),
                         contentDescription = null,
-                        modifier = Modifier.size(50.dp)
+                        modifier = Modifier.size(70.dp)
                     )
                 },
                 actions = {
@@ -85,6 +89,7 @@ fun Profile(navController: NavController){
                             contentDescription = null,
                             modifier = Modifier.size(30.dp)
                         )
+                        Badges(CreateReportController.GlobalData.notification.value)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.DarkGray)
@@ -136,6 +141,7 @@ fun Profile(navController: NavController){
             var direccion by remember { mutableStateOf("") }
             var correo by remember { mutableStateOf("") }
             var contrasenia by remember { mutableStateOf("") }
+            var countNotifi = GlobalCount.countNotification.value
 
             LaunchedEffect(email) {
                 db.collection("usuarios")
@@ -149,9 +155,11 @@ fun Profile(navController: NavController){
                             direccion = document.getString("direccion") ?: ""
                             correo = document.getString("email") ?: ""
                             contrasenia = document.getString("contrasenia") ?: ""
+                            countNotifi = document.getLong("countNotifi")?.toInt() ?: 0
                         }
                     }
             }
+
             TextField(
                 value = nombre,
                 onValueChange = { newText -> nombre = newText },

@@ -75,9 +75,9 @@ fun ReportsAdmin(navController: NavController){
                 },
                 navigationIcon = {
                     Image(
-                        painter = painterResource(R.drawable.vueloenavion),
+                        painter = painterResource(R.drawable.logo),
                         contentDescription = null,
-                        modifier = Modifier.size(50.dp)
+                        modifier = Modifier.size(70.dp)
                     )
                 },
                 actions = {
@@ -91,6 +91,8 @@ fun ReportsAdmin(navController: NavController){
                             contentDescription = null,
                             modifier = Modifier.size(30.dp)
                         )
+                        Badges(CreateReportController.GlobalData.notification.value)
+
                     }
                 }
             )

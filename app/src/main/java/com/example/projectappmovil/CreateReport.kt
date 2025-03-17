@@ -43,7 +43,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
+import com.example.projectappmovil.controller.CommentController
 import com.example.projectappmovil.controller.CreateReportController
+import com.example.projectappmovil.controller.NotificationController
 import com.example.projectappmovil.navegation.AppScreens
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -215,13 +217,13 @@ fun CreateReport(navController: NavController){
             Spacer(modifier = Modifier.height(10.dp))
 
             val createReportController = CreateReportController()
+            val count = NotificationController()
             val currentUser = FirebaseAuth.getInstance()
             val userId = currentUser.uid
             val email = currentUser.currentUser?.email
 
             var showDialog by remember { mutableStateOf(false) }
             var showDialog2 by remember { mutableStateOf(false) }
-
             Button(
                 onClick = {
                     if (titulo.isEmpty() || categoria.isEmpty() || descripcion.isEmpty() || ubicacion.isEmpty()) {
@@ -233,6 +235,8 @@ fun CreateReport(navController: NavController){
                                 createReportController.saveReportImageToFirebaseStorage(
                                     userId, titulo, categoria, descripcion, ubicacion, uri, nombre
                                 )
+                                CreateReportController.GlobalData.notification.value += 1
+
                                 showDialog2 = true
                                 titulo = ""
                                 categoria = ""

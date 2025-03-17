@@ -56,7 +56,6 @@ fun Notification(navController: NavController){
         }
     ) { innerPadding ->
         LoadReports(innerPadding)
-
     }
 }
 

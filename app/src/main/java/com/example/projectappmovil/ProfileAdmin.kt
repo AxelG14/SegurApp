@@ -68,9 +68,9 @@ fun ProfileAdmin(navController: NavController){
                 ) },
                 navigationIcon = {
                     Image(
-                        painter = painterResource(R.drawable.vueloenavion),
+                        painter = painterResource(R.drawable.logo),
                         contentDescription = null,
-                        modifier = Modifier.size(50.dp)
+                        modifier = Modifier.size(70.dp)
                     )
                 },
                 actions = {
@@ -84,6 +84,7 @@ fun ProfileAdmin(navController: NavController){
                             contentDescription = null,
                             modifier = Modifier.size(30.dp)
                         )
+                        Badges(CreateReportController.GlobalData.notification.value)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.DarkGray)

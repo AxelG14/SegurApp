@@ -40,7 +40,6 @@ class CreateReportController {
 
     object GlobalData {
         val notification =  mutableStateOf(0)
-        val check = mutableStateOf(false)
     }
 
     fun saveReportImageToFirebaseStorage(

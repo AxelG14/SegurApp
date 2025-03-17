@@ -2,10 +2,11 @@ package com.example.projectappmovil.controller
 
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.firestore
 
 class RegisterController {
-
+    val db = Firebase.firestore
     fun agregarClienteFirestore(
         userId: String,
         nombre: String,
@@ -14,7 +15,6 @@ class RegisterController {
         email: String,
         contrasenia: String
     ) {
-        val db = Firebase.firestore
         val cliente = hashMapOf(
             "nombre" to nombre,
             "ciudad" to ciudad,
@@ -46,6 +46,7 @@ class RegisterController {
                 }
         }
     }
+
 
 //    fun agregarAdministrador(userId: String){
 //        val db = Firebase.firestore

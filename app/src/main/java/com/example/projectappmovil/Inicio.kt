@@ -2,7 +2,9 @@ package com.example.projectappmovil
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -27,6 +29,11 @@ import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,11 +43,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.projectappmovil.controller.CreateReportController
+import com.example.projectappmovil.controller.NotificationController
 import com.example.projectappmovil.navegation.AppScreens
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestoreException
+import com.google.firebase.firestore.QuerySnapshot
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Inicio(navController: NavController){
+
+    val countNotifi = NotificationController()
+    val userId = FirebaseAuth.getInstance().currentUser?.uid
+
     Scaffold (
         bottomBar = {
             NavigationBar {
@@ -78,15 +95,15 @@ fun Inicio(navController: NavController){
                 )},
                 navigationIcon = {
                     Image(
-                        painter = painterResource(R.drawable.vueloenavion),
+                        painter = painterResource(R.drawable.logo),
                         contentDescription = null,
-                        modifier = Modifier.size(50.dp)
+                        modifier = Modifier.size(70.dp)
                     )
                 },
                 actions = {
                     SmallFloatingActionButton (
-                        onClick = { navController.navigate(route = AppScreens.NotificationScreen.route)
-                            CreateReportController.GlobalData.notification.value = 0 },
+                        onClick = {navController.navigate(route = AppScreens.NotificationScreen.route)
+                            countNotifi.updateClear(userId!!)},
                         containerColor = Color.White,
                         contentColor = Color.Black
                     ) {
@@ -95,22 +112,28 @@ fun Inicio(navController: NavController){
                             contentDescription = null,
                             modifier = Modifier.size(30.dp)
                         )
+                        Badges(CreateReportController.GlobalData.notification.value)
 
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.DarkGray)
 
             )
         },
         content = { innerPadding ->
             Column (
                 modifier = Modifier
+                    .background(Color.Black)
                     .padding(innerPadding)
                     .fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally
             )   {
+                Image(
+                    painter = painterResource(R.drawable.logo2),
+                    contentDescription = null,
+                    modifier = Modifier.size(400.dp)
+                )
 
-                Spacer(modifier = Modifier.height(460.dp))
+                Spacer(modifier = Modifier.height(70.dp))
                 Button(
                     onClick = {navController.navigate(route = AppScreens.CreateReportScreen.route)},
                     colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary),
@@ -126,5 +149,33 @@ fun Inicio(navController: NavController){
         }
     )
 }
+
+@Composable
+fun loadCount(): List<Users1> {
+    val db = Firebase.firestore
+    var users by remember { mutableStateOf<List<Users1>>(emptyList()) }
+
+    LaunchedEffect(Unit) {
+        db.collection("usuarios")
+            .addSnapshotListener { snapshot: QuerySnapshot?, exception: FirebaseFirestoreException? ->
+                if (exception != null) {
+                    println("Error listening to Firestore: ${exception.message}")
+                    return@addSnapshotListener
+                }
+                val newUser = snapshot?.documents?.mapNotNull { document ->
+                    Users1(
+                        countNotifi = document.getLong("countNotifi")?.toInt() ?: 0
+
+                    )
+                } ?: emptyList()
+                users = newUser
+            }
+    }
+    return users
+}
+
+data class Users1 (
+    val countNotifi: Int
+        )
 
 
