@@ -1,5 +1,6 @@
 package com.example.projectappmovil
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -35,6 +36,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -59,9 +61,10 @@ fun Registro(navController: NavController) {
         snackbarHost = { SnackbarHost(snackbarHostState) {
             Snackbar(
                 modifier = Modifier
+                    .border(1.dp, Color.White)
                     .clip(RoundedCornerShape(12.dp))
                     .fillMaxWidth(0.8f),
-                containerColor = MaterialTheme.colorScheme.secondary,
+                containerColor = MaterialTheme.colorScheme.primary,
                 content = {
                     Text(
                         text = "SE HA REGISTRADO CORRECTAMENTE",
@@ -183,12 +186,19 @@ fun Registro(navController: NavController) {
                         onClick = { if (nombre.isBlank() || ciudad.isBlank() || direccion.isBlank()
                             || email.isBlank() || contrasenia.isBlank()){
                             showErrorDialog = true
-                        }
-                            registerController1.agregarClienteAuth(nombre, ciudad, direccion, email, contrasenia)
-                            nombre = "" ; ciudad = "" ; direccion = "" ; email = "" ; contrasenia = ""
+                        } else {
+                            registerController1.agregarClienteAuth(
+                                nombre,
+                                ciudad,
+                                direccion,
+                                email,
+                                contrasenia
+                            )
+                            nombre = ""; ciudad = ""; direccion = ""; email = ""; contrasenia = ""
                             coroutineScope.launch {
                                 snackbarHostState.showSnackbar("Registro exitoso")
                             }
+                        }
                         },
                         modifier = Modifier
                             .fillMaxWidth(0.8f)
