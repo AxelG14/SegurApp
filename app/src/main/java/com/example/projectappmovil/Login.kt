@@ -106,8 +106,6 @@
 
             val loginController = LoginController()
 
-            val buttonColor = if (emailError || passwordError) Color.Gray else MaterialTheme.colorScheme.primary
-
             Button(
                 onClick = {
                     emailError = email.isBlank()
@@ -120,8 +118,7 @@
                         loginController.iniciarSesion(email, password, navController)
                     }
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = buttonColor),
-                enabled = !(emailError || passwordError),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                 modifier = Modifier
                     .padding(top = 30.dp)
                     .size(height = 50.dp, width = 250.dp)
