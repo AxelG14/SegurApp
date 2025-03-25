@@ -1,5 +1,6 @@
 package com.example.projectappmovil
 
+import android.util.Patterns
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -45,6 +46,9 @@ import androidx.navigation.NavController
 import com.example.projectappmovil.controller.RegisterController
 import kotlinx.coroutines.launch
 
+fun isValidEmail(email: String): Boolean {
+    return Patterns.EMAIL_ADDRESS.matcher(email).matches()
+}
 
 @Composable
 fun Registro(navController: NavController) {
@@ -53,6 +57,12 @@ fun Registro(navController: NavController) {
     var direccion by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var contrasenia by remember { mutableStateOf("") }
+
+    var nombreError by remember { mutableStateOf(false) }
+    var ciudadError by remember { mutableStateOf(false) }
+    var direccionError by remember { mutableStateOf(false) }
+    var emailError by remember { mutableStateOf(false) }
+    var contraseniaError by remember { mutableStateOf(false) }
 
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
@@ -102,103 +112,104 @@ fun Registro(navController: NavController) {
 
                     TextField(
                         value = nombre,
-                        onValueChange = { newNombre -> nombre = newNombre },
+                        onValueChange = { nombre = it; nombreError = false },
                         label = { Text("NOMBRE") },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Default.Person, contentDescription = null
-                            )
-                        },
+                        leadingIcon = { Icon(imageVector = Icons.Default.Person, contentDescription = null) },
+                        isError = nombreError,
                         modifier = Modifier
                             .fillMaxWidth(0.8f)
                             .padding(vertical = 8.dp)
+                            .border(2.dp, if (nombreError) Color.Red else Color.Transparent, RoundedCornerShape(8.dp))
                     )
-
-                    Spacer(modifier = Modifier.height(16.dp))
 
                     TextField(
                         value = ciudad,
-                        onValueChange = { ciudad = it },
+                        onValueChange = { ciudad = it; ciudadError = false },
                         label = { Text("CIUDAD") },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Default.Place, contentDescription = null
-                            )
-                        },
+                        leadingIcon = { Icon(imageVector = Icons.Default.Place, contentDescription = null) },
+                        isError = ciudadError,
                         modifier = Modifier
                             .fillMaxWidth(0.8f)
                             .padding(vertical = 8.dp)
+                            .border(2.dp, if (ciudadError) Color.Red else Color.Transparent, RoundedCornerShape(8.dp))
                     )
-
-                    Spacer(modifier = Modifier.height(16.dp))
 
                     TextField(
                         value = direccion,
-                        onValueChange = { newDireccion -> direccion = newDireccion },
+                        onValueChange = { direccion = it; direccionError = false },
                         label = { Text("DIRECCION") },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Default.Home, contentDescription = null
-                            )
-                        },
+                        leadingIcon = { Icon(imageVector = Icons.Default.Home, contentDescription = null) },
+                        isError = direccionError,
                         modifier = Modifier
                             .fillMaxWidth(0.8f)
                             .padding(vertical = 8.dp)
+                            .border(2.dp, if (direccionError) Color.Red else Color.Transparent, RoundedCornerShape(8.dp))
                     )
-
-                    Spacer(modifier = Modifier.height(16.dp))
 
                     TextField(
                         value = email,
-                        onValueChange = { newEmail -> email = newEmail },
+                        onValueChange = { email = it; emailError = false },
                         label = { Text("EMAIL") },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Default.Email, contentDescription = null
-                            )
-                        },
+                        leadingIcon = { Icon(imageVector = Icons.Default.Email, contentDescription = null) },
+                        isError = emailError,
                         modifier = Modifier
                             .fillMaxWidth(0.8f)
                             .padding(vertical = 8.dp)
+                            .border(2.dp, if (emailError) Color.Red else Color.Transparent, RoundedCornerShape(8.dp))
                     )
-
-                    Spacer(modifier = Modifier.height(16.dp))
 
                     TextField(
                         value = contrasenia,
-                        onValueChange = { newContrasenia -> contrasenia = newContrasenia },
+                        onValueChange = { contrasenia = it; contraseniaError = false },
                         label = { Text("CONTRASEÑA") },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Default.Edit, contentDescription = null
-                            )
-                        },
+                        leadingIcon = { Icon(imageVector = Icons.Default.Edit, contentDescription = null) },
+                        isError = contraseniaError,
                         modifier = Modifier
                             .fillMaxWidth(0.8f)
                             .padding(vertical = 8.dp)
+                            .border(2.dp, if (contraseniaError) Color.Red else Color.Transparent, RoundedCornerShape(8.dp))
                     )
 
                     Spacer(modifier = Modifier.height(24.dp))
 
                     val registerController1 = RegisterController()
                     var showErrorDialog by remember { mutableStateOf(false) }
+
                     Button(
-                        onClick = { if (nombre.isBlank() || ciudad.isBlank() || direccion.isBlank()
-                            || email.isBlank() || contrasenia.isBlank()){
-                            showErrorDialog = true
-                        } else {
-                            registerController1.agregarClienteAuth(
-                                nombre,
-                                ciudad,
-                                direccion,
-                                email,
-                                contrasenia
-                            )
-                            nombre = ""; ciudad = ""; direccion = ""; email = ""; contrasenia = ""
-                            coroutineScope.launch {
-                                snackbarHostState.showSnackbar("Registro exitoso")
+                        onClick = {
+                            nombreError = false
+                            ciudadError = false
+                            direccionError = false
+                            emailError = false
+                            contraseniaError = false
+
+                            // Validar campos vacíos
+                            if (nombre.isBlank() || ciudad.isBlank() || direccion.isBlank() || email.isBlank() || contrasenia.isBlank()) {
+                                nombreError = nombre.isBlank()
+                                ciudadError = ciudad.isBlank()
+                                direccionError = direccion.isBlank()
+                                emailError = email.isBlank()
+                                contraseniaError = contrasenia.isBlank()
+                                showErrorDialog = true
                             }
-                        }
+                            else if (!isValidEmail(email)) {
+                                emailError = true
+                                showErrorDialog = true
+                            }
+                            else if (contrasenia.length < 6) {
+                                contraseniaError = true
+                                showErrorDialog = true
+                            }
+                            else {
+                                registerController1.agregarClienteAuth(
+                                    nombre, ciudad, direccion, email, contrasenia
+                                )
+                                nombre = ""; ciudad = ""; direccion = ""; email = ""; contrasenia = ""
+
+                                coroutineScope.launch {
+                                    snackbarHostState.showSnackbar("Registro exitoso")
+                                }
+                            }
                         },
                         modifier = Modifier
                             .fillMaxWidth(0.8f)
@@ -224,7 +235,20 @@ fun Registro(navController: NavController) {
                         AlertDialog(
                             onDismissRequest = { showErrorDialog = false },
                             title = { Text("ERROR") },
-                            text = { Text("Debes de llenar todos los campos") },
+                            text = {
+                                Text(
+                                    when {
+                                        nombre.isBlank() || ciudad.isBlank() || direccion.isBlank()
+                                                || email.isBlank() || contrasenia.isBlank() ->
+                                            "Debes llenar todos los campos."
+                                        !isValidEmail(email) ->
+                                            "Asegúrate de que el email tenga el formato correcto, por ejemplo:\n**tucorreo@gmail.com**."
+                                        contrasenia.length < 6 ->
+                                            "La contraseña debe tener al menos 6 caracteres."
+                                        else -> ""
+                                    }
+                                )
+                            },
                             confirmButton = {
                                 Button(
                                     onClick = { showErrorDialog = false }
@@ -239,6 +263,7 @@ fun Registro(navController: NavController) {
         }
     )
 }
+
 
 
 

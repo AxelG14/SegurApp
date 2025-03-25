@@ -230,7 +230,7 @@ fun LoadComments(innerPadding: PaddingValues, idReport: String) {
                     )
                 } ?: emptyList()
 
-                CommentController.GlobalData2.countMessages = newComment.size
+                //CommentController.GlobalData2.countMessages = newComment.size
                 comment = newComment
             }
     }
