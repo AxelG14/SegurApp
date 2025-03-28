@@ -143,12 +143,18 @@ fun Profile(navController: NavController){
             var contrasenia by remember { mutableStateOf("") }
             var countNotifi = GlobalCount.countNotification.value
 
+            var isNombreError by remember { mutableStateOf(false) }
+            var isCiudadError by remember { mutableStateOf(false) }
+            var isDireccionError by remember { mutableStateOf(false) }
+            var isCorreoError by remember { mutableStateOf(false) }
+            var isContraseniaError by remember { mutableStateOf(false) }
+
             LaunchedEffect(email) {
                 db.collection("usuarios")
                     .whereEqualTo("email", email)
                     .get()
                     .addOnSuccessListener { querySnapshot ->
-                        if (!querySnapshot.isEmpty){
+                        if (!querySnapshot.isEmpty) {
                             val document = querySnapshot.documents[0]
                             nombre = document.getString("nombre") ?: ""
                             ciudad = document.getString("ciudad") ?: ""
@@ -162,62 +168,83 @@ fun Profile(navController: NavController){
 
             TextField(
                 value = nombre,
-                onValueChange = { newText -> nombre = newText },
+                onValueChange = { newText ->
+                    nombre = newText
+                    isNombreError = newText.isEmpty()
+                },
                 label = { Text("Nombre") },
                 modifier = Modifier.fillMaxWidth(0.8f),
-                leadingIcon = {
-                    Icon(imageVector = Icons.Default.Person, contentDescription = null)
-                }
+                leadingIcon = { Icon(imageVector = Icons.Default.Person, contentDescription = null) },
+                isError = isNombreError
             )
+
             TextField(
                 value = ciudad,
-                onValueChange = { newText -> ciudad = newText },
+                onValueChange = { newText ->
+                    ciudad = newText
+                    isCiudadError = newText.isEmpty()
+                },
                 label = { Text("Ciudad") },
                 modifier = Modifier.fillMaxWidth(0.8f),
-                leadingIcon = {
-                    Icon(imageVector = Icons.Default.Home, contentDescription = null)
-                }
+                leadingIcon = { Icon(imageVector = Icons.Default.Home, contentDescription = null) },
+                isError = isCiudadError
             )
+
             TextField(
                 value = direccion,
-                onValueChange = { newText -> direccion = newText },
+                onValueChange = { newText ->
+                    direccion = newText
+                    isDireccionError = newText.isEmpty()
+                },
                 label = { Text("Dirección") },
                 modifier = Modifier.fillMaxWidth(0.8f),
-                leadingIcon = {
-                    Icon(imageVector = Icons.Default.Place, contentDescription = null)
-                }
+                leadingIcon = { Icon(imageVector = Icons.Default.Place, contentDescription = null) },
+                isError = isDireccionError
             )
+
             TextField(
                 value = correo,
-                onValueChange = { newText -> correo = newText },
+                onValueChange = { newText ->
+                    correo = newText
+                    isCorreoError = newText.isEmpty()
+                },
                 label = { Text("Email") },
                 modifier = Modifier.fillMaxWidth(0.8f),
-                leadingIcon = {
-                    Icon(imageVector = Icons.Default.Email, contentDescription = null)
-                }
+                leadingIcon = { Icon(imageVector = Icons.Default.Email, contentDescription = null) },
+                isError = isCorreoError
             )
+
             TextField(
                 value = contrasenia,
-                onValueChange = { newText -> contrasenia = newText },
+                onValueChange = { newText ->
+                    contrasenia = newText
+                    isContraseniaError = newText.isEmpty()
+                },
                 label = { Text("Contraseña") },
                 modifier = Modifier.fillMaxWidth(0.8f),
-                leadingIcon = {
-                    Icon(imageVector = Icons.Default.Create, contentDescription = null)
-                }
+                leadingIcon = { Icon(imageVector = Icons.Default.Create, contentDescription = null) },
+                isError = isContraseniaError
             )
 
             val profile = ProfileController()
             var showDialog by remember { mutableStateOf(false) }
             var showDialog2 by remember { mutableStateOf(false) }
+
             Button(
                 onClick = {
-                    if (nombre.isEmpty() || ciudad.isEmpty() || direccion.isEmpty()
-                        || correo.isEmpty() || contrasenia.isEmpty()) {
+                    isNombreError = nombre.isEmpty()
+                    isCiudadError = ciudad.isEmpty()
+                    isDireccionError = direccion.isEmpty()
+                    isCorreoError = correo.isEmpty()
+                    isContraseniaError = contrasenia.isEmpty()
+
+                    if (isNombreError || isCiudadError || isDireccionError || isCorreoError || isContraseniaError) {
                         showDialog = true
                     } else {
                         profile.udpateInfo(email, nombre, ciudad, direccion, correo, contrasenia)
                         showDialog2 = true
-                    } },
+                    }
+                },
                 modifier = Modifier
                     .height(45.dp)
                     .fillMaxWidth(0.7f)

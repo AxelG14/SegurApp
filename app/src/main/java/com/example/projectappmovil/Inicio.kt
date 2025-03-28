@@ -4,9 +4,9 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Place
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -24,10 +25,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -54,6 +56,7 @@ import com.google.firebase.ktx.Firebase
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Inicio(navController: NavController){
+
     val countNotifi = NotificationController()
     val userId = FirebaseAuth.getInstance().currentUser?.uid
 
@@ -94,7 +97,7 @@ fun Inicio(navController: NavController){
                 )},
                 navigationIcon = {
                     Image(
-                        painter = painterResource(R.drawable.logo),
+                        painter = painterResource(R.drawable.logo2),
                         contentDescription = null,
                         modifier = Modifier.size(70.dp)
                     )
@@ -119,28 +122,49 @@ fun Inicio(navController: NavController){
             )
         },
         content = { innerPadding ->
-            Column (
+            Column(
                 modifier = Modifier
                     .background(Color.Black)
                     .padding(innerPadding)
                     .fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally
-            )   {
+            ) {
+                var searchQuery by remember { mutableStateOf("") }
+
+                OutlinedTextField(
+                    value = searchQuery,
+                    onValueChange = { searchQuery = it },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 16.dp, end = 5.dp, top = 16.dp),
+                    placeholder = { Text("Buscar...") },
+                    leadingIcon = {
+                        Icon(imageVector = Icons.Default.Search, contentDescription = "Buscar")
+                    },
+                    singleLine = true,
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = Color.White,
+                        unfocusedBorderColor = Color.Gray,
+                        cursorColor = Color.White
+                    )
+                )
                 Image(
-                    painter = painterResource(R.drawable.logo2),
+                    painter = painterResource(R.drawable.mapa),
                     contentDescription = null,
                     modifier = Modifier.size(400.dp)
                 )
 
-                Spacer(modifier = Modifier.height(70.dp))
+                Spacer(modifier = Modifier.height(50.dp))
+
                 Button(
-                    onClick = {navController.navigate(route = AppScreens.CreateReportScreen.route)},
+                    onClick = { navController.navigate(route = AppScreens.CreateReportScreen.route) },
                     colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary),
                     modifier = Modifier
                         .size(height = 50.dp, width = 300.dp),
                     border = BorderStroke(1.dp, Color.White)
                 ) {
-                    Text("CREAR REPORTE",
+                    Text(
+                        "CREAR REPORTE",
                         fontWeight = FontWeight.Bold
                     )
                 }
