@@ -8,14 +8,13 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
 class LoginController {
-    fun iniciarSesion(email: String, password: String, navController: NavController) {
+    fun iniciarSesion(email: String, password: String, navController: NavController, onError: (String) -> Unit) {
         val auth: FirebaseAuth = Firebase.auth
         val db = Firebase.firestore
 
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-
                     val userUid = auth.currentUser?.uid
 
                     if (userUid != null) {
@@ -25,23 +24,22 @@ class LoginController {
                             .addOnSuccessListener { documentSnapshot ->
                                 if (documentSnapshot.exists()) {
                                     val rol = documentSnapshot.getString("rol")
-
                                     when (rol) {
                                         "admin" -> navController.navigate(route = AppScreens.InicioAdminScreen.route)
                                         else -> navController.navigate(route = AppScreens.InicioScreen.route)
                                     }
                                 } else {
-                                    println("El usuario no existe en Firestore")
+                                    onError("Usuario o contraseña incorrectos.")
                                 }
                             }
-                            .addOnFailureListener { exception ->
-                                println("Error al obtener el documento del usuario: ${exception.message}")
+                            .addOnFailureListener {
+                                onError("Error al obtener los datos del usuario. Inténtalo de nuevo.")
                             }
                     } else {
-                        println("No se pudo obtener el UID del usuario")
+                        onError("No se pudo obtener el UID del usuario.")
                     }
                 } else {
-                    println("Error en el inicio de sesión: ${task.exception?.message}")
+                    onError("Usuario o contraseña incorrectos.")
                 }
             }
     }

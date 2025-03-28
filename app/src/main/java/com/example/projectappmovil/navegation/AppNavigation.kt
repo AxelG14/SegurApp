@@ -10,6 +10,7 @@ import com.example.projectappmovil.AllReports
 import com.example.projectappmovil.Comments
 import com.example.projectappmovil.Inicio
 import com.example.projectappmovil.CreateReport
+import com.example.projectappmovil.CreateReportEmerge
 import com.example.projectappmovil.InicioAdmin
 import com.example.projectappmovil.Notification
 import com.example.projectappmovil.Password
@@ -35,6 +36,9 @@ fun AppNavigation() {
         }
         composable(AppScreens.InicioScreen.route) {
             Inicio(navController)
+        }
+        composable(AppScreens.CreateReportEmercyScreen.route) {
+            CreateReportEmerge(navController)
         }
         composable(AppScreens.CreateReportScreen.route) {
             CreateReport(navController)

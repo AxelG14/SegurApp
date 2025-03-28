@@ -64,6 +64,7 @@
 
             var email by remember { mutableStateOf("") }
             var emailError by remember { mutableStateOf(false) }
+
             TextField(
                 value = email,
                 onValueChange = { newEmail ->
@@ -80,6 +81,7 @@
 
             var password by remember { mutableStateOf("") }
             var passwordError by remember { mutableStateOf(false) }
+
             TextField(
                 value = password,
                 onValueChange = { newPass ->
@@ -115,7 +117,10 @@
                         errorMessage = "Debes llenar todos los campos"
                         showErrorDialog = true
                     } else {
-                        loginController.iniciarSesion(email, password, navController)
+                        loginController.iniciarSesion(email, password, navController) { error ->
+                            errorMessage = error
+                            showErrorDialog = true
+                        }
                     }
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
@@ -152,7 +157,7 @@
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.clickable {
-                        navController.navigate(route = AppScreens.ForgotScreen.route)
+                        navController.navigate(route = AppScreens.CreateReportEmercyScreen.route)
                     }
                 )
             }

@@ -54,7 +54,6 @@ import com.google.firebase.ktx.Firebase
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Inicio(navController: NavController){
-
     val countNotifi = NotificationController()
     val userId = FirebaseAuth.getInstance().currentUser?.uid
 

@@ -3,6 +3,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import android.net.Uri
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Home
@@ -38,12 +40,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
-import com.example.projectappmovil.controller.CommentController
 import com.example.projectappmovil.controller.CreateReportController
 import com.example.projectappmovil.controller.NotificationController
 import com.example.projectappmovil.navegation.AppScreens
@@ -113,6 +115,10 @@ fun CreateReport(navController: NavController){
             var descripcion by remember { mutableStateOf("") }
             var ubicacion by remember { mutableStateOf("") }
             var nombre by remember { mutableStateOf("") }
+            var tituloError by remember { mutableStateOf(false) }
+            var categoriaError by remember { mutableStateOf(false) }
+            var descripcionError by remember { mutableStateOf(false) }
+            var ubicacionError by remember { mutableStateOf(false) }
 
             LaunchedEffect(user?.email) {
                 db.collection("usuarios")
@@ -130,8 +136,11 @@ fun CreateReport(navController: NavController){
                 value = titulo,
                 onValueChange = { newTitulo ->
                     titulo = newTitulo
+                    tituloError = newTitulo.isEmpty()
                 },
-                modifier = Modifier.fillMaxWidth(0.9f),
+                modifier = Modifier
+                    .fillMaxWidth(0.9f)
+                    .border(2.dp, if (tituloError) Color.Red else Color.Transparent, RoundedCornerShape(4.dp)),
                 label = { Text("Titulo") }
             )
 
@@ -148,7 +157,9 @@ fun CreateReport(navController: NavController){
                     trailingIcon = {
                         ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
                     },
-                    modifier = Modifier.menuAnchor()
+                    modifier = Modifier
+                        .menuAnchor()
+                        .border(2.dp, if (categoriaError) Color.Red else Color.Transparent, RoundedCornerShape(4.dp))
                 )
 
                 ExposedDropdownMenu(
@@ -160,18 +171,23 @@ fun CreateReport(navController: NavController){
                             text = { Text(categoriaItem) },
                             onClick = {
                                 categoria = categoriaItem
+                                categoriaError = false
                                 expanded = false
                             }
                         )
                     }
                 }
             }
+
             TextField(
                 value = descripcion,
                 onValueChange = { newDescripcion ->
                     descripcion = newDescripcion
+                    descripcionError = newDescripcion.isEmpty()
                 },
-                modifier = Modifier.fillMaxWidth(0.9f),
+                modifier = Modifier
+                    .fillMaxWidth(0.9f)
+                    .border(2.dp, if (descripcionError) Color.Red else Color.Transparent, RoundedCornerShape(4.dp)),
                 label = { Text("Descripcion") }
             )
 
@@ -179,9 +195,12 @@ fun CreateReport(navController: NavController){
                 value = ubicacion,
                 onValueChange = { newUbicacion ->
                     ubicacion = newUbicacion
+                    ubicacionError = newUbicacion.isEmpty()
                 },
-                modifier = Modifier.fillMaxWidth(0.9f),
-                label = { Text("ubicacion") }
+                modifier = Modifier
+                    .fillMaxWidth(0.9f)
+                    .border(2.dp, if (ubicacionError) Color.Red else Color.Transparent, RoundedCornerShape(4.dp)),
+                label = { Text("Ubicacion") }
             )
 
             Spacer(modifier = Modifier.height(30.dp))
@@ -226,9 +245,13 @@ fun CreateReport(navController: NavController){
             var showDialog2 by remember { mutableStateOf(false) }
             Button(
                 onClick = {
-                    if (titulo.isEmpty() || categoria.isEmpty() || descripcion.isEmpty() || ubicacion.isEmpty()) {
-                        showDialog = true
+                    tituloError = titulo.isEmpty()
+                    categoriaError = categoria.isEmpty()
+                    descripcionError = descripcion.isEmpty()
+                    ubicacionError = ubicacion.isEmpty()
 
+                    if (tituloError || categoriaError || descripcionError || ubicacionError) {
+                        showDialog = true
                     } else {
                         if (userId != null && imageUri != null && email != null) {
                             imageUri?.let { uri ->
