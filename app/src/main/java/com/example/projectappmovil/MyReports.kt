@@ -113,7 +113,7 @@ fun Reports1(navController: NavController) {
                 ) },
                 navigationIcon = {
                     Image(
-                        painter = painterResource(R.drawable.logo),
+                        painter = painterResource(R.drawable.logo2),
                         contentDescription = null,
                         modifier = Modifier.size(70.dp)
                     )

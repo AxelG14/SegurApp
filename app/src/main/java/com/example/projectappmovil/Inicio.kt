@@ -30,6 +30,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -118,13 +119,13 @@ fun Inicio(navController: NavController){
 
                     }
                 },
-
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.DarkGray)
             )
         },
         content = { innerPadding ->
             Column(
                 modifier = Modifier
-                    .background(Color.Black)
+                    .background(Color.White)
                     .padding(innerPadding)
                     .fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally
