@@ -105,7 +105,7 @@ fun AllReports(navController: NavHostController) {
                 ) },
                 navigationIcon = {
                     Image(
-                        painter = painterResource(R.drawable.logo),
+                        painter = painterResource(R.drawable.logo2),
                         contentDescription = null,
                         modifier = Modifier.size(70.dp)
                     )
