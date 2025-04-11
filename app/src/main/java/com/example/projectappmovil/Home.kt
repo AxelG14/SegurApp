@@ -42,6 +42,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -74,19 +75,19 @@ fun Inicio(navController: NavController){
                     onClick = {navController.navigate(route = AppScreens.AllReportsScreen.route)},
                     selected = false,
                     icon = { Icon(imageVector = Icons.Default.Place, contentDescription = null) },
-                    label = { Text("REPORTS") }
+                    label = { Text("REPORTES") }
                 )
                 NavigationBarItem(
                     onClick = {navController.navigate(route = AppScreens.MyReportsScreen.route)},
                     selected = false,
                     icon = { Icon(imageVector = Icons.Default.Create, contentDescription = null) },
-                    label = { Text("MINE") }
+                    label = { Text("PROPIOS", textAlign = TextAlign.Center) },
                 )
                 NavigationBarItem(
                     onClick = {navController.navigate(route = AppScreens.ProfileScreen.route)},
                     selected = false,
                     icon = { Icon(imageVector = Icons.Default.Person, contentDescription = null) },
-                    label = { Text("PROFILE") }
+                    label = { Text("PERFIL") }
                 )
             }
         },

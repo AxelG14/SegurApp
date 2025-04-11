@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Home
@@ -25,21 +26,28 @@ import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Place
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -82,19 +90,19 @@ fun AllReports(navController: NavHostController) {
                     onClick = {navController.navigate(route = AppScreens.AllReportsScreen.route)},
                     selected = true,
                     icon = { Icon(imageVector = Icons.Default.Place, contentDescription = null) },
-                    label = { Text("REPORTS") }
+                    label = { Text("REPORTES") }
                 )
                 NavigationBarItem(
                     onClick = {navController.navigate(route = AppScreens.MyReportsScreen.route)},
                     selected = false,
                     icon = { Icon(imageVector = Icons.Default.Create, contentDescription = null) },
-                    label = { Text("MINE") }
+                    label = { Text("PROPIOS") }
                 )
                 NavigationBarItem(
                     onClick = {navController.navigate(route = AppScreens.ProfileScreen.route)},
                     selected = false,
                     icon = { Icon(imageVector = Icons.Default.Person, contentDescription = null)},
-                    label = { Text("PROFILE") }
+                    label = { Text("PERFIL") }
                 )
             }
         },
@@ -131,7 +139,53 @@ fun AllReports(navController: NavHostController) {
             )
         }
     ) { innerPadding ->
-        LoadImageFromFirestore3(innerPadding, navController)
+        var expanded by remember { mutableStateOf(false) }
+        val categorias =
+            listOf("Todos", "Seguridad", "Infraestructura", "Mascotas", "Comunidad", "Emergencia")
+        var categoria by remember { mutableStateOf(categorias.first()) }
+        Column(
+            modifier = Modifier
+                .background(Color.White)
+                .padding(innerPadding)
+                .fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+
+            ExposedDropdownMenuBox(
+                expanded = expanded,
+                onExpandedChange = { expanded = !expanded },
+                modifier = Modifier.fillMaxWidth(0.9f).padding(vertical = 8.dp)
+            ) {
+                TextField(
+                    value = categoria,
+                    onValueChange = { },
+                    readOnly = true,
+                    label = { Text("Categoria") },
+                    trailingIcon = {
+                        ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                    },
+                    modifier = Modifier
+                        .menuAnchor()
+                        .border(2.dp, Color.Transparent, RoundedCornerShape(4.dp))
+                )
+
+                ExposedDropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false }
+                ) {
+                    categorias.forEach { categoriaItem ->
+                        DropdownMenuItem(
+                            text = { Text(categoriaItem) },
+                            onClick = {
+                                categoria = categoriaItem
+                                expanded = false
+                            }
+                        )
+                    }
+                }
+            }
+        }
+        LoadImageFromFirestore3(innerPadding, navController, categoria)
     }
 }
 
@@ -159,11 +213,10 @@ fun Badges(count: Int) {
 }
 
 @Composable
-fun LoadImageFromFirestore3(innerPadding: PaddingValues, navController: NavController) {
+fun LoadImageFromFirestore3(innerPadding: PaddingValues, navController: NavController, categoria : String) {
     val db = Firebase.firestore
     var reports by remember { mutableStateOf<List<Report2>>(emptyList()) }
-
-    LaunchedEffect(Unit) {
+    LaunchedEffect(categoria) {
         db.collection("reportes")
             .addSnapshotListener { snapshot: QuerySnapshot?, exception: FirebaseFirestoreException? ->
                 if (exception != null) {
@@ -184,7 +237,16 @@ fun LoadImageFromFirestore3(innerPadding: PaddingValues, navController: NavContr
 
                     )
                 } ?: emptyList()
-                reports = newReports
+                reports = when (categoria) {
+                    "Seguridad" -> newReports.filter { it.categoria == "Seguridad" }
+                    "Infraestructura" -> newReports.filter { it.categoria == "Infraestructura" }
+                    "Mascotas" -> newReports.filter { it.categoria == "Mascotas" }
+                    "Comunidad" -> newReports.filter { it.categoria == "Comunidad" }
+                    "Emergencia" -> newReports.filter { it.categoria == "Emergencia" }
+                    else -> newReports
+                }
+                val categorias =
+                    listOf("Todos", "Seguridad", "Infraestructura", "Mascotas", "Comunidad", "Emergencia")
             }
     }
     MyLazyColumn2(reports = reports, innerPadding, navController)
@@ -202,6 +264,7 @@ data class Report2(
     val countMessages: Int
 )
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyLazyColumn2(reports: List<Report2>, innerPadding: PaddingValues, navController: NavController) {
     LazyColumn(
@@ -209,6 +272,7 @@ fun MyLazyColumn2(reports: List<Report2>, innerPadding: PaddingValues, navContro
             .padding(innerPadding)
             .fillMaxWidth()
             .padding(horizontal = 12.dp)
+            .padding(top = 80.dp)
     ) {
 
         items(reports) { report ->

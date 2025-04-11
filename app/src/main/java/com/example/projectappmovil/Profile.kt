@@ -39,6 +39,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -61,6 +62,7 @@ fun Profile(navController: NavController){
     val auth = FirebaseAuth.getInstance()
     val user = auth.currentUser
     val email = user?.email ?: ""
+    val context = LocalContext.current
 
     Scaffold (
         topBar = {
@@ -107,19 +109,19 @@ fun Profile(navController: NavController){
                     onClick = {navController.navigate(route = AppScreens.AllReportsScreen.route)},
                     selected = false,
                     icon = { Icon(imageVector = Icons.Default.Place, contentDescription = null) },
-                    label = { Text("REPORTS") }
+                    label = { Text("REPORTES") }
                 )
                 NavigationBarItem(
                     onClick = {navController.navigate(route = AppScreens.MyReportsScreen.route)},
                     selected = false,
                     icon = { Icon(imageVector = Icons.Default.Create, contentDescription = null) },
-                    label = { Text("MINE") }
+                    label = { Text("PROPIOS") }
                 )
                 NavigationBarItem(
                     onClick = {},
                     selected = true,
                     icon = { Icon(imageVector = Icons.Default.Person, contentDescription = null) },
-                    label = { Text("PROFILE") }
+                    label = { Text("PERFIL") }
                 )
             }
 
@@ -229,6 +231,7 @@ fun Profile(navController: NavController){
             val profile = ProfileController()
             var showDialog by remember { mutableStateOf(false) }
             var showDialog2 by remember { mutableStateOf(false) }
+            var showDialog3 by remember { mutableStateOf(false) }
 
             Button(
                 onClick = {
@@ -279,6 +282,22 @@ fun Profile(navController: NavController){
                 Text(text = "ELIMINAR CUENTA")
 
             }
+            Button(
+                onClick = {
+                    if(user != null){
+                        val id = user.uid
+                        profile.saveEmergencyUser(context, "emergency", id)
+                        profile.saveEmergencyUserName(context, "emergencyName", nombre)
+                        showDialog3 = true
+                    }
+                },
+                modifier = Modifier.fillMaxWidth(0.6f),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.DarkGray,
+                )
+            ) {
+                Text(text = "HABILITAR EMERGENCIA")
+            }
             if (showDialog) {
                 AlertDialog(
                     onDismissRequest = { showDialog = false },
@@ -302,6 +321,21 @@ fun Profile(navController: NavController){
                     confirmButton = {
                         Button(
                             onClick = { showDialog2 = false }
+                        ) {
+                            Text("Aceptar")
+                        }
+                    }
+                )
+            }
+            if (showDialog3) {
+                AlertDialog(
+                    onDismissRequest = { showDialog3 = false },
+                    title = { Text("Éxito") },
+                    text = { Text("Usuario De Emergencia Asignado") },
+                    icon = {Icons.Default.Check},
+                    confirmButton = {
+                        Button(
+                            onClick = { showDialog3 = false }
                         ) {
                             Text("Aceptar")
                         }

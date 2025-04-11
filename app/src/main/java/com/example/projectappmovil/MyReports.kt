@@ -56,6 +56,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -81,7 +82,7 @@ fun Reports1(navController: NavController) {
         bottomBar = {
             NavigationBar {
                 NavigationBarItem(
-                    onClick = {navController.navigate(route = AppScreens.InicioScreen.route)},
+                    onClick = {},
                     selected = false,
                     icon = { Icon(imageVector = Icons.Default.Home, contentDescription = null) },
                     label = { Text("MENU") }
@@ -90,19 +91,19 @@ fun Reports1(navController: NavController) {
                     onClick = {navController.navigate(route = AppScreens.AllReportsScreen.route)},
                     selected = false,
                     icon = { Icon(imageVector = Icons.Default.Place, contentDescription = null) },
-                    label = { Text("REPORTS") }
+                    label = { Text("REPORTES") }
                 )
                 NavigationBarItem(
                     onClick = {navController.navigate(route = AppScreens.MyReportsScreen.route)},
                     selected = true,
                     icon = { Icon(imageVector = Icons.Default.Create, contentDescription = null) },
-                    label = { Text("MINE") }
+                    label = { Text("PROPIOS", textAlign = TextAlign.Center) },
                 )
                 NavigationBarItem(
                     onClick = {navController.navigate(route = AppScreens.ProfileScreen.route)},
                     selected = false,
-                    icon = { Icon(imageVector = Icons.Default.Person, contentDescription = null)},
-                    label = { Text("PROFILE") }
+                    icon = { Icon(imageVector = Icons.Default.Person, contentDescription = null) },
+                    label = { Text("PERFIL") }
                 )
             }
         },
@@ -254,19 +255,21 @@ fun MyLazyColumn(reports: List<Report>, innerPadding: PaddingValues, navControll
                     )
 
                     val categorias =
-                        listOf("Seguridad", "Emergencias", "Infraestructura", "Mascotas", "Comunidad")
+                        listOf("Seguridad", "Infraestructura", "Mascotas", "Comunidad")
                     var categoria by remember { mutableStateOf(report.categoria) }
                     var expanded by remember { mutableStateOf(false) }
                     ExposedDropdownMenuBox(
                         expanded = expanded,
-                        onExpandedChange = { expanded = !expanded },
+                        onExpandedChange = { if (!isEditing) {
+                            expanded = !expanded
+                        } },
                         modifier = Modifier.fillMaxWidth(0.9f).padding(vertical = 8.dp)
                     ){
                         TextField(
                             value = categoria,
                             onValueChange = { categoria = it },
                             label = { Text("Categoria") },
-                            readOnly = isEditing,
+                            readOnly = true,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .menuAnchor(),

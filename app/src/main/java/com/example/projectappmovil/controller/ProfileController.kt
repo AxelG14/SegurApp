@@ -1,5 +1,6 @@
 package com.example.projectappmovil.controller
 
+import android.content.Context
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
@@ -47,6 +48,26 @@ class ProfileController {
     }
     fun signOut(){
         auth.signOut()
+    }
+
+    fun saveEmergencyUser(context: Context, key: String, value: String) {
+        val prefs = context.getSharedPreferences("emergency", Context.MODE_PRIVATE)
+        prefs.edit().putString(key, value).apply()
+    }
+
+    fun getEmergencyUser(context: Context, key: String): String? {
+        val prefs = context.getSharedPreferences("emergency", Context.MODE_PRIVATE)
+        return prefs.getString(key, null)
+    }
+
+    fun saveEmergencyUserName(context: Context, key: String, value: String) {
+        val prefs = context.getSharedPreferences("emergencyName", Context.MODE_PRIVATE)
+        prefs.edit().putString(key, value).apply()
+    }
+
+    fun getEmergencyUserName(context: Context, key: String): String? {
+        val prefs = context.getSharedPreferences("emergencyName", Context.MODE_PRIVATE)
+        return prefs.getString(key, null)
     }
 
     fun deleteProfile(userId: String){

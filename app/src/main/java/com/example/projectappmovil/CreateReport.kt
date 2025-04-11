@@ -109,7 +109,7 @@ fun CreateReport(navController: NavController){
 
             var titulo by remember { mutableStateOf("") }
             val categorias =
-                listOf("Seguridad", "Emergencias", "Infraestructura", "Mascotas", "Comunidad")
+                listOf("Seguridad", "Infraestructura", "Mascotas", "Comunidad")
             var categoria by remember { mutableStateOf("") }
             var expanded by remember { mutableStateOf(false) }
             var descripcion by remember { mutableStateOf("") }
