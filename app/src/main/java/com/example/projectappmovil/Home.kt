@@ -26,6 +26,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
@@ -127,9 +128,11 @@ fun Inicio(navController: NavController){
             Column(
                 modifier = Modifier
                     .background(Color.White)
+                    .background(Color.Black)
                     .padding(innerPadding)
                     .fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
+
             ) {
                 var searchQuery by remember { mutableStateOf("") }
 
@@ -138,8 +141,9 @@ fun Inicio(navController: NavController){
                     onValueChange = { searchQuery = it },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(start = 16.dp, end = 5.dp, top = 16.dp),
+                        .padding(10.dp),
                     placeholder = { Text("Buscar...") },
+                    shape = MaterialTheme.shapes.medium,
                     leadingIcon = {
                         Icon(imageVector = Icons.Default.Search, contentDescription = "Buscar")
                     },
@@ -148,6 +152,7 @@ fun Inicio(navController: NavController){
                         focusedBorderColor = Color.White,
                         unfocusedBorderColor = Color.Gray,
                         cursorColor = Color.White
+
                     )
                 )
                 Image(
@@ -156,7 +161,7 @@ fun Inicio(navController: NavController){
                     modifier = Modifier.size(400.dp)
                 )
 
-                Spacer(modifier = Modifier.height(50.dp))
+                Spacer(modifier = Modifier.height(20.dp))
 
                 Button(
                     onClick = { navController.navigate(route = AppScreens.CreateReportScreen.route) },

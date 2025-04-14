@@ -145,7 +145,7 @@ fun AllReports(navController: NavHostController) {
         var categoria by remember { mutableStateOf(categorias.first()) }
         Column(
             modifier = Modifier
-                .background(Color.White)
+                .background(Color.Black)
                 .padding(innerPadding)
                 .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -154,19 +154,22 @@ fun AllReports(navController: NavHostController) {
             ExposedDropdownMenuBox(
                 expanded = expanded,
                 onExpandedChange = { expanded = !expanded },
-                modifier = Modifier.fillMaxWidth(0.9f).padding(vertical = 8.dp)
+                modifier = Modifier.fillMaxWidth(0.9f)
+                    .padding(vertical = 8.dp)
             ) {
                 TextField(
                     value = categoria,
                     onValueChange = { },
                     readOnly = true,
                     label = { Text("Categoria") },
+                    shape = MaterialTheme.shapes.medium,
                     trailingIcon = {
                         ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
                     },
                     modifier = Modifier
+                        .fillMaxWidth()
                         .menuAnchor()
-                        .border(2.dp, Color.Transparent, RoundedCornerShape(4.dp))
+                        .border(1.dp, MaterialTheme.colorScheme.primary, shape = MaterialTheme.shapes.medium)
                 )
 
                 ExposedDropdownMenu(
@@ -188,7 +191,6 @@ fun AllReports(navController: NavHostController) {
         LoadImageFromFirestore3(innerPadding, navController, categoria)
     }
 }
-
 
 @Composable
 fun Badges(count: Int) {

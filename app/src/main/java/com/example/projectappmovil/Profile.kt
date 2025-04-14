@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Create
@@ -291,9 +292,10 @@ fun Profile(navController: NavController){
                         showDialog3 = true
                     }
                 },
-                modifier = Modifier.fillMaxWidth(0.6f),
+                modifier = Modifier
+                    .fillMaxWidth(0.7f),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.DarkGray,
+                    containerColor = Color.Gray
                 )
             ) {
                 Text(text = "HABILITAR EMERGENCIA")

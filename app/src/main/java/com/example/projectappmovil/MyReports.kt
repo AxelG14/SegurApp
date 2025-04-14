@@ -82,7 +82,7 @@ fun Reports1(navController: NavController) {
         bottomBar = {
             NavigationBar {
                 NavigationBarItem(
-                    onClick = {},
+                    onClick = {navController.navigate(route = AppScreens.InicioScreen.route)},
                     selected = false,
                     icon = { Icon(imageVector = Icons.Default.Home, contentDescription = null) },
                     label = { Text("MENU") }
