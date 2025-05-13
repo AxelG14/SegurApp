@@ -1,103 +1,85 @@
+@file:Suppress("MissingPermission")
+
 package com.example.projectappmovil
 
+import android.content.Context
+import android.location.Location
+import android.util.Log
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Create
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Place
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SmallFloatingActionButton
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import com.example.projectappmovil.controller.CreateReportController
 import com.example.projectappmovil.controller.NotificationController
 import com.example.projectappmovil.navegation.AppScreens
+import com.google.android.gms.location.LocationServices
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestoreException
-import com.google.firebase.firestore.QuerySnapshot
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
+import com.mapbox.geojson.Point
+import com.mapbox.maps.Style
+import com.mapbox.maps.extension.compose.MapEffect
+import com.mapbox.maps.extension.compose.MapboxMap
+import com.mapbox.maps.extension.compose.animation.viewport.rememberMapViewportState
+import com.mapbox.maps.extension.compose.annotation.rememberIconImage
+import com.mapbox.maps.extension.compose.style.MapStyle
+import com.mapbox.maps.plugin.locationcomponent.createDefault2DPuck
+import com.mapbox.maps.plugin.locationcomponent.location
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Inicio(navController: NavController){
+fun Inicio(navController: NavController) {
+
+    val mapViewportState = rememberMapViewportState()
+    val context = LocalContext.current
+
+    val permission = android.Manifest.permission.ACCESS_FINE_LOCATION
+    var hasPermission by remember {
+        mutableStateOf(
+            ContextCompat.checkSelfPermission(context, permission) ==
+                    android.content.pm.PackageManager.PERMISSION_GRANTED
+        )
+    }
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        hasPermission = isGranted
+        Toast.makeText(
+            context,
+            if (isGranted) "Permiso concedido" else "Permiso denegado",
+            Toast.LENGTH_SHORT
+        ).show()
+    }
+
+    LaunchedEffect(Unit) {
+        if (!hasPermission) {
+            permissionLauncher.launch(permission)
+        }
+    }
 
     val countNotifi = NotificationController()
     val userId = FirebaseAuth.getInstance().currentUser?.uid
 
-    Scaffold (
-        bottomBar = {
-            NavigationBar {
-                NavigationBarItem(
-                    onClick = {},
-                    selected = true,
-                    icon = { Icon(imageVector = Icons.Default.Home, contentDescription = null) },
-                    label = { Text("MENU") }
-                )
-                NavigationBarItem(
-                    onClick = {navController.navigate(route = AppScreens.AllReportsScreen.route)},
-                    selected = false,
-                    icon = { Icon(imageVector = Icons.Default.Place, contentDescription = null) },
-                    label = { Text("REPORTES") }
-                )
-                NavigationBarItem(
-                    onClick = {navController.navigate(route = AppScreens.MyReportsScreen.route)},
-                    selected = false,
-                    icon = { Icon(imageVector = Icons.Default.Create, contentDescription = null) },
-                    label = { Text("PROPIOS", textAlign = TextAlign.Center) },
-                )
-                NavigationBarItem(
-                    onClick = {navController.navigate(route = AppScreens.ProfileScreen.route)},
-                    selected = false,
-                    icon = { Icon(imageVector = Icons.Default.Person, contentDescription = null) },
-                    label = { Text("PERFIL") }
-                )
-            }
-        },
-
+    Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text("Inicio",
-                    fontSize = 20.sp
-                )},
+                title = { Text("Inicio", fontSize = 20.sp) },
                 navigationIcon = {
                     Image(
                         painter = painterResource(R.drawable.logo2),
@@ -106,33 +88,56 @@ fun Inicio(navController: NavController){
                     )
                 },
                 actions = {
-                    SmallFloatingActionButton (
-                        onClick = {navController.navigate(route = AppScreens.NotificationScreen.route)
-                            countNotifi.updateClear(userId!!)},
+                    SmallFloatingActionButton(
+                        onClick = {
+                            navController.navigate(route = AppScreens.NotificationScreen.route)
+                            countNotifi.updateClear(userId!!)
+                        },
                         containerColor = Color.White,
                         contentColor = Color.Black
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Notifications,
-                            contentDescription = null,
-                            modifier = Modifier.size(30.dp)
-                        )
+                        Icon(Icons.Default.Notifications, contentDescription = null, modifier = Modifier.size(30.dp))
                         Badges(CreateReportController.GlobalData.notification.value)
-
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.DarkGray)
             )
         },
+        bottomBar = {
+            NavigationBar {
+                NavigationBarItem(
+                    selected = true,
+                    onClick = {},
+                    icon = { Icon(Icons.Default.Home, contentDescription = null) },
+                    label = { Text("MENU") }
+                )
+                NavigationBarItem(
+                    selected = false,
+                    onClick = { navController.navigate(AppScreens.AllReportsScreen.route) },
+                    icon = { Icon(Icons.Default.Place, contentDescription = null) },
+                    label = { Text("REPORTES") }
+                )
+                NavigationBarItem(
+                    selected = false,
+                    onClick = { navController.navigate(AppScreens.MyReportsScreen.route) },
+                    icon = { Icon(Icons.Default.Create, contentDescription = null) },
+                    label = { Text("PROPIOS") }
+                )
+                NavigationBarItem(
+                    selected = false,
+                    onClick = { navController.navigate(AppScreens.ProfileScreen.route) },
+                    icon = { Icon(Icons.Default.Person, contentDescription = null) },
+                    label = { Text("PERFIL") }
+                )
+            }
+        },
         content = { innerPadding ->
             Column(
                 modifier = Modifier
-                    .background(Color.White)
-                    .background(Color.Black)
                     .padding(innerPadding)
-                    .fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-
+                    .fillMaxSize()
+                    .background(Color.Black),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 var searchQuery by remember { mutableStateOf("") }
 
@@ -144,68 +149,51 @@ fun Inicio(navController: NavController){
                         .padding(10.dp),
                     placeholder = { Text("Buscar...") },
                     shape = MaterialTheme.shapes.medium,
-                    leadingIcon = {
-                        Icon(imageVector = Icons.Default.Search, contentDescription = "Buscar")
-                    },
+                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Buscar") },
                     singleLine = true,
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         focusedBorderColor = Color.White,
                         unfocusedBorderColor = Color.Gray,
                         cursorColor = Color.White
-
                     )
                 )
-                Image(
-                    painter = painterResource(R.drawable.mapa),
-                    contentDescription = null,
-                    modifier = Modifier.size(400.dp)
-                )
+
+                var pointClicked by remember { mutableStateOf<Point?>(null) }
+                var markerResourceId by remember { mutableStateOf(R.drawable.red_marker) }
+                var marker = rememberIconImage(key = markerResourceId, painter = painterResource(markerResourceId))
+
+                MapboxMap(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(530.dp),
+                    mapViewportState = mapViewportState,
+                    onMapClickListener = { point ->
+                        pointClicked = point
+                        true
+                    },
+                    style = { MapStyle(style = Style.STANDARD_SATELLITE) }
+                ) {
+                    MapEffect(pointClicked) { mapView ->
+                        mapView.location.updateSettings {
+                            locationPuck = createDefault2DPuck(withBearing = true)
+                            enabled = true
+                        }
+                    }
+                }
 
                 Spacer(modifier = Modifier.height(20.dp))
 
                 Button(
-                    onClick = { navController.navigate(route = AppScreens.CreateReportScreen.route) },
+                    onClick = { navController.navigate(AppScreens.CreateReportScreen.route) },
                     colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary),
                     modifier = Modifier
-                        .size(height = 50.dp, width = 300.dp),
+                        .height(50.dp)
+                        .width(300.dp),
                     border = BorderStroke(1.dp, Color.White)
                 ) {
-                    Text(
-                        "CREAR REPORTE",
-                        fontWeight = FontWeight.Bold
-                    )
+                    Text("CREAR REPORTE", fontWeight = FontWeight.Bold)
                 }
             }
         }
     )
 }
-
-@Composable
-fun loadCount(): List<Users1> {
-    val db = Firebase.firestore
-    var users by remember { mutableStateOf<List<Users1>>(emptyList()) }
-
-    LaunchedEffect(Unit) {
-        db.collection("usuarios")
-            .addSnapshotListener { snapshot: QuerySnapshot?, exception: FirebaseFirestoreException? ->
-                if (exception != null) {
-                    println("Error listening to Firestore: ${exception.message}")
-                    return@addSnapshotListener
-                }
-                val newUser = snapshot?.documents?.mapNotNull { document ->
-                    Users1(
-                        countNotifi = document.getLong("countNotifi")?.toInt() ?: 0
-
-                    )
-                } ?: emptyList()
-                users = newUser
-            }
-    }
-    return users
-}
-
-data class Users1 (
-    val countNotifi: Int
-        )
-
-

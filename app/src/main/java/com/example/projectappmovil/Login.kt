@@ -8,7 +8,6 @@
     import androidx.compose.foundation.layout.Spacer
     import androidx.compose.foundation.layout.fillMaxSize
     import androidx.compose.foundation.layout.height
-    import androidx.compose.foundation.layout.navigationBarsPadding
     import androidx.compose.foundation.layout.padding
     import androidx.compose.foundation.layout.size
     import androidx.compose.material3.AlertDialog
@@ -34,6 +33,11 @@
     import androidx.navigation.NavController
     import com.example.projectappmovil.controller.LoginController
     import com.example.projectappmovil.navegation.AppScreens
+    import androidx.compose.foundation.layout.WindowInsets
+    import androidx.compose.foundation.layout.navigationBars
+    import androidx.compose.foundation.layout.asPaddingValues
+    import androidx.compose.foundation.layout.windowInsetsBottomHeight
+
 
 
     @Composable
@@ -146,11 +150,12 @@
 
             Spacer(modifier = Modifier.height(10.dp))
 
+            val navigationBarsVisible =
+                WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding() > 0.dp
+
             Box(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(bottom = 16.dp)
-                    .navigationBarsPadding(),
+                    .fillMaxSize(),
                 contentAlignment = Alignment.BottomCenter
             ) {
                 Text(
@@ -158,11 +163,14 @@
                     color = Color.Gray,
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.clickable {
-                        navController.navigate(route = AppScreens.CreateReportEmercyScreen.route)
-                    }
+                    modifier = Modifier
+                        .padding(bottom = if (navigationBarsVisible) 32.dp else 8.dp)
+                        .clickable {
+                            navController.navigate(route = AppScreens.CreateReportEmercyScreen.route)
+                        }
                 )
             }
+
 
             if (showErrorDialog) {
                 AlertDialog(

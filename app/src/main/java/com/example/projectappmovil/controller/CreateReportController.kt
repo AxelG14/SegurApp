@@ -7,23 +7,27 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import java.util.UUID
+import com.mapbox.geojson.Point
+
 
 class CreateReportController {
     val db = Firebase.firestore
     fun saveReport(
-        userId: String, titulo: String, categoria: String, descripcion: String,
-        ubicacion: String, imageUrl: String, name: String
+        userId: String, titulo: String, categoria: String, descripcion: String, imageUrl: String, name: String, latitude: Double,
+        longitude: Double
     ) {
         val report = hashMapOf(
             "titulo" to titulo,
             "categoria" to categoria,
             "descripcion" to descripcion,
-            "ubicacion" to ubicacion,
             "imageUrl" to imageUrl,
             "nombre" to name,
             "userId" to userId,
             "check" to false,
-            "countMessages" to 0
+            "countMessages" to 0,
+            "latitude" to latitude,
+            "longitude" to longitude
+
         )
         db.collection("reportes")
             .add(report)
@@ -47,9 +51,10 @@ class CreateReportController {
         titulo: String,
         categoria: String,
         descripcion: String,
-        ubicacion: String,
         imageUri: Uri,
         nombre: String,
+        latitude: Double,
+        longitude: Double
     ) {
         val storage = FirebaseStorage.getInstance()
         val storageRef = storage.reference
@@ -60,7 +65,7 @@ class CreateReportController {
         uploadTask.addOnSuccessListener {
             imageRef.downloadUrl.addOnSuccessListener { uri ->
                 val imageUrl = uri.toString()
-                saveReport(userId, titulo, categoria, descripcion, ubicacion, imageUrl, nombre)
+                saveReport(userId, titulo, categoria, descripcion, imageUrl, nombre, latitude, longitude)
             }
         }.addOnFailureListener { exception ->
             println("Error uploading image: ${exception.message}")
@@ -73,4 +78,23 @@ class CreateReportController {
             .update("countMessages", FieldValue.increment(1))
             .addOnSuccessListener { println("countMessages updated successfully") }
     }
+
+    fun fetchAllReportPoints(onComplete: (List<Point>) -> Unit) {
+        db.collection("reportes")
+            .get()
+            .addOnSuccessListener { snapshot ->
+                val points = snapshot.documents.mapNotNull { doc ->
+                    val lat = doc.getDouble("latitude")
+                    val lon = doc.getDouble("longitude")
+                    if (lat != null && lon != null) Point.fromLngLat(lon, lat) else null
+                }
+                onComplete(points)
+            }
+            .addOnFailureListener {
+                onComplete(emptyList())
+            }
+    }
+
+
+
 }

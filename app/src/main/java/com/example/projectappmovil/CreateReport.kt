@@ -1,6 +1,8 @@
 package com.example.projectappmovil
 import androidx.activity.compose.rememberLauncherForActivityResult
 import android.net.Uri
+import android.util.Log
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -38,21 +40,34 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.traceEventEnd
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.projectappmovil.controller.CreateReportController
 import com.example.projectappmovil.controller.NotificationController
 import com.example.projectappmovil.navegation.AppScreens
+import com.google.android.gms.location.LocationServices
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.mapbox.geojson.Point
+import com.mapbox.maps.Style
+import com.mapbox.maps.extension.compose.MapboxMap
+import com.mapbox.maps.extension.compose.animation.viewport.rememberMapViewportState
+import com.mapbox.maps.extension.compose.annotation.IconImage
+import com.mapbox.maps.extension.compose.annotation.generated.PointAnnotation
+import com.mapbox.maps.extension.compose.annotation.rememberIconImage
+import com.mapbox.maps.extension.compose.style.MapStyle
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -61,6 +76,42 @@ fun CreateReport(navController: NavController){
     val db = Firebase.firestore
     val auth = Firebase.auth
     val user = auth.currentUser
+
+    val context = LocalContext.current
+    val permission = android.Manifest.permission.ACCESS_FINE_LOCATION
+
+    var hasPermission by remember {
+        mutableStateOf(
+            ContextCompat.checkSelfPermission(
+                context,
+                permission
+            ) == android.content.pm.PackageManager.PERMISSION_GRANTED
+        )
+    }
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        hasPermission = isGranted
+        Toast.makeText(
+            context,
+            if (isGranted) "Permiso concedido" else "Permiso denegado",
+            Toast.LENGTH_SHORT
+        ).show()
+    }
+
+    LaunchedEffect(hasPermission) {
+        if (!hasPermission) {
+            permissionLauncher.launch(permission)
+        } else {
+            val fusedClient = LocationServices.getFusedLocationProviderClient(context)
+            fusedClient.lastLocation.addOnSuccessListener { location ->
+                location?.let {
+                    Log.d("Map", "Lat: ${it.latitude}, Lon: ${it.longitude}")
+                } ?: Log.w("Map", "Ubicación nula")
+            }
+        }
+    }
 
     Scaffold (
         bottomBar = {
@@ -191,17 +242,38 @@ fun CreateReport(navController: NavController){
                 label = { Text("Descripcion") }
             )
 
-            TextField(
-                value = ubicacion,
-                onValueChange = { newUbicacion ->
-                    ubicacion = newUbicacion
-                    ubicacionError = newUbicacion.isEmpty()
-                },
+            var pointClicked by remember { mutableStateOf<Point?>(null) }
+
+            var markerResourceId by remember { mutableStateOf(R.drawable.red_marker) }
+
+            var marker = rememberIconImage(key = markerResourceId, painter = painterResource(markerResourceId ))
+
+            MapboxMap(
                 modifier = Modifier
-                    .fillMaxWidth(0.9f)
-                    .border(2.dp, if (ubicacionError) Color.Red else Color.Transparent, RoundedCornerShape(4.dp)),
-                label = { Text("Ubicacion") }
-            )
+                    .fillMaxWidth()
+                    .height(200.dp),
+                mapViewportState = rememberMapViewportState {
+                    setCameraOptions {
+                        zoom(11.0)
+                        center(Point.fromLngLat(-75.6906164, 4.5292671))
+                        pitch(0.0)
+                        bearing(0.0)
+                    }
+                },
+                onMapClickListener = { point ->
+                    pointClicked = point
+                    true
+                },
+                style = { MapStyle(style = Style.STANDARD_SATELLITE) }
+            ) {
+                pointClicked?.let { clickedPoint ->
+                    PointAnnotation(
+                        point = pointClicked!!
+                    ) {
+                        iconImage = marker
+                    }
+                }
+            }
 
             Spacer(modifier = Modifier.height(30.dp))
 
@@ -256,7 +328,8 @@ fun CreateReport(navController: NavController){
                         if (userId != null && imageUri != null && email != null) {
                             imageUri?.let { uri ->
                                 createReportController.saveReportImageToFirebaseStorage(
-                                    userId, titulo, categoria, descripcion, ubicacion, uri, nombre
+                                    userId, titulo, categoria, descripcion, uri, nombre, pointClicked!!.latitude()
+                                        .dec(), pointClicked!!.longitude().inc()
                                 )
                                 CreateReportController.GlobalData.notification.value += 1
 
