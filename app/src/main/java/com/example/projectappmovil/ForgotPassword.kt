@@ -29,6 +29,9 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.google.firebase.auth.ActionCodeSettings
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
 
 
 @Composable
@@ -64,15 +67,32 @@ fun Password(navController: NavController) {
         )
 
         var showErrorDialog by remember { mutableStateOf(false) }
+        var errorMessage by remember { mutableStateOf("") }
+
         if (showErrorDialog) {
             AlertDialog(
                 onDismissRequest = { showErrorDialog = false },
                 title = { Text("ERROR") },
-                text = { Text("Debes de llenar todos los campos")},
+                text = { Text(errorMessage.ifEmpty { "Debes de llenar todos los campos" }) },
                 confirmButton = {
-                    Button(
-                        onClick = { showErrorDialog = false }
-                    ) {
+                    Button(onClick = { showErrorDialog = false }) {
+                        Text("Aceptar")
+                    }
+                }
+            )
+        }
+
+        var showSuccessDialog by remember { mutableStateOf(false) }
+        if (showSuccessDialog) {
+            AlertDialog(
+                onDismissRequest = { showSuccessDialog = false },
+                title = { Text("ÉXITO") },
+                text = { Text("Se ha enviado un correo para restablecer tu contraseña") },
+                confirmButton = {
+                    Button(onClick = {
+                        showSuccessDialog = false
+                        navController.popBackStack()
+                    }) {
                         Text("Aceptar")
                     }
                 }
@@ -82,8 +102,20 @@ fun Password(navController: NavController) {
         Button(
             onClick = {
                 if (email.isBlank()) {
+                    errorMessage = "Debes ingresar un correo electrónico"
                     showErrorDialog = true
                 } else {
+                    sendPasswordResetEmail(
+                        email = email,
+                        onSuccess = { showSuccessDialog = true },
+                        onError = { exception ->
+                            errorMessage = when (exception) {
+                                is FirebaseAuthInvalidUserException -> "No existe una cuenta con este correo"
+                                else -> "Error al enviar el correo: ${exception.message}"
+                            }
+                            showErrorDialog = true
+                        }
+                    )
                 }
             },
             modifier = Modifier
@@ -94,14 +126,34 @@ fun Password(navController: NavController) {
             Text(text = "CONFIRMAR")
         }
 
+        // Botón INICIAR SESIÓN (fuera del AlertDialog)
         Button(
             onClick = { navController.popBackStack() },
             modifier = Modifier
-                .padding(top = 40.dp)
+                .padding(top = 20.dp)
                 .fillMaxWidth(0.7f),
-            colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary)
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.secondary
+            )
         ) {
             Text(text = "INICIAR SESIÓN")
         }
     }
+}
+
+// Función para enviar correo de recuperación (sin cambios)
+fun sendPasswordResetEmail(
+    email: String,
+    onSuccess: () -> Unit,
+    onError: (Exception) -> Unit
+) {
+    val auth = FirebaseAuth.getInstance()
+    auth.sendPasswordResetEmail(email)
+        .addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                onSuccess()
+            } else {
+                onError(task.exception ?: Exception("Error desconocido"))
+            }
+        }
 }

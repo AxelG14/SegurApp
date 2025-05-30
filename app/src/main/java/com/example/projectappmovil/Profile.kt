@@ -50,29 +50,32 @@ import com.example.projectappmovil.controller.CreateReportController
 import com.example.projectappmovil.controller.ProfileController
 import com.example.projectappmovil.navegation.AppScreens
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
-object GlobalCount{
+object GlobalCount {
     var countNotification = mutableStateOf(0)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Profile(navController: NavController){
+fun Profile(navController: NavController) {
     val auth = FirebaseAuth.getInstance()
     val user = auth.currentUser
     val email = user?.email ?: ""
     val context = LocalContext.current
 
-    Scaffold (
+    Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text(
-                    text = "Perfil",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold
-                ) },
+                title = {
+                    Text(
+                        text = "Perfil",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                },
                 navigationIcon = {
                     Image(
                         painter = painterResource(R.drawable.logo2),
@@ -81,9 +84,11 @@ fun Profile(navController: NavController){
                     )
                 },
                 actions = {
-                    SmallFloatingActionButton (
-                        onClick = { navController.navigate(route = AppScreens.NotificationScreen.route)
-                            CreateReportController.GlobalData.notification.value = 0 },
+                    SmallFloatingActionButton(
+                        onClick = {
+                            navController.navigate(route = AppScreens.NotificationScreen.route)
+                            CreateReportController.GlobalData.notification.value = 0
+                        },
                         containerColor = Color.White,
                         contentColor = Color.Black
                     ) {
@@ -101,19 +106,19 @@ fun Profile(navController: NavController){
         bottomBar = {
             NavigationBar {
                 NavigationBarItem(
-                    onClick = {navController.navigate(route = AppScreens.InicioScreen.route)},
+                    onClick = { navController.navigate(route = AppScreens.InicioScreen.route) },
                     selected = false,
                     icon = { Icon(imageVector = Icons.Default.Home, contentDescription = null) },
                     label = { Text("MENU") }
                 )
                 NavigationBarItem(
-                    onClick = {navController.navigate(route = AppScreens.AllReportsScreen.route)},
+                    onClick = { navController.navigate(route = AppScreens.AllReportsScreen.route) },
                     selected = false,
                     icon = { Icon(imageVector = Icons.Default.Place, contentDescription = null) },
                     label = { Text("REPORTES") }
                 )
                 NavigationBarItem(
-                    onClick = {navController.navigate(route = AppScreens.MyReportsScreen.route)},
+                    onClick = { navController.navigate(route = AppScreens.MyReportsScreen.route) },
                     selected = false,
                     icon = { Icon(imageVector = Icons.Default.Create, contentDescription = null) },
                     label = { Text("PROPIOS") }
@@ -129,7 +134,7 @@ fun Profile(navController: NavController){
         }
 
     ) { innerPadding ->
-        Column (
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(12.dp)
@@ -137,8 +142,8 @@ fun Profile(navController: NavController){
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly
         ) {
-
             val db = Firebase.firestore
+
             var nombre by remember { mutableStateOf("") }
             var ciudad by remember { mutableStateOf("") }
             var direccion by remember { mutableStateOf("") }
@@ -177,7 +182,12 @@ fun Profile(navController: NavController){
                 },
                 label = { Text("Nombre") },
                 modifier = Modifier.fillMaxWidth(0.8f),
-                leadingIcon = { Icon(imageVector = Icons.Default.Person, contentDescription = null) },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Person,
+                        contentDescription = null
+                    )
+                },
                 isError = isNombreError
             )
 
@@ -201,7 +211,12 @@ fun Profile(navController: NavController){
                 },
                 label = { Text("Dirección") },
                 modifier = Modifier.fillMaxWidth(0.8f),
-                leadingIcon = { Icon(imageVector = Icons.Default.Place, contentDescription = null) },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Place,
+                        contentDescription = null
+                    )
+                },
                 isError = isDireccionError
             )
 
@@ -213,7 +228,12 @@ fun Profile(navController: NavController){
                 },
                 label = { Text("Email") },
                 modifier = Modifier.fillMaxWidth(0.8f),
-                leadingIcon = { Icon(imageVector = Icons.Default.Email, contentDescription = null) },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Email,
+                        contentDescription = null
+                    )
+                },
                 isError = isCorreoError
             )
 
@@ -225,7 +245,12 @@ fun Profile(navController: NavController){
                 },
                 label = { Text("Contraseña") },
                 modifier = Modifier.fillMaxWidth(0.8f),
-                leadingIcon = { Icon(imageVector = Icons.Default.Create, contentDescription = null) },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Create,
+                        contentDescription = null
+                    )
+                },
                 isError = isContraseniaError
             )
 
@@ -259,7 +284,7 @@ fun Profile(navController: NavController){
                 onClick = {
                     profile.signOut()
                     navController.navigate(route = AppScreens.MainScreen.route)
-                          },
+                },
                 modifier = Modifier.fillMaxWidth(0.6f),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.secondary,
@@ -285,7 +310,7 @@ fun Profile(navController: NavController){
             }
             Button(
                 onClick = {
-                    if(user != null){
+                    if (user != null) {
                         val id = user.uid
                         profile.saveEmergencyUser(context, "emergency", id)
                         profile.saveEmergencyUserName(context, "emergencyName", nombre)
@@ -319,7 +344,7 @@ fun Profile(navController: NavController){
                     onDismissRequest = { showDialog2 = false },
                     title = { Text("Éxito") },
                     text = { Text("Se han guardado los cambios!") },
-                    icon = {Icons.Default.Check},
+                    icon = { Icons.Default.Check },
                     confirmButton = {
                         Button(
                             onClick = { showDialog2 = false }
@@ -334,7 +359,7 @@ fun Profile(navController: NavController){
                     onDismissRequest = { showDialog3 = false },
                     title = { Text("Éxito") },
                     text = { Text("Usuario De Emergencia Asignado") },
-                    icon = {Icons.Default.Check},
+                    icon = { Icons.Default.Check },
                     confirmButton = {
                         Button(
                             onClick = { showDialog3 = false }

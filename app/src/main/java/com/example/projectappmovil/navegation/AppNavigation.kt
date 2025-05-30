@@ -20,6 +20,7 @@ import com.example.projectappmovil.PreviewLogin
 import com.example.projectappmovil.ProfileAdmin
 import com.example.projectappmovil.Registro
 import com.example.projectappmovil.ReportsAdmin
+import com.example.projectappmovil.ResetPasswordScreen
 
 @Composable
 fun AppNavigation() {
@@ -72,6 +73,11 @@ fun AppNavigation() {
         }
         composable(AppScreens.NotificationScreen.route) {
             Notification(navController)
+        }
+
+        composable("resetPassword/{email}") { backStackEntry ->
+            val email = backStackEntry.arguments?.getString("email")
+            ResetPasswordScreen(email, navController)
         }
 
         }

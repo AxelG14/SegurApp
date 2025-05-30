@@ -75,7 +75,8 @@ fun ProfileAdmin(navController: NavController){
                 },
                 actions = {
                     SmallFloatingActionButton (
-                        onClick = { CreateReportController.GlobalData.notification.value = 0 },
+                        onClick = { navController.navigate(route = AppScreens.NotificationScreen.route)
+                            CreateReportController.GlobalData.notification.value = 0 },
                         containerColor = Color.White,
                         contentColor = Color.Black
                     ) {

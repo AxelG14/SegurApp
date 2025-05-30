@@ -60,11 +60,18 @@ import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.mapbox.geojson.Point
+import com.mapbox.maps.Style
+import com.mapbox.maps.extension.compose.MapboxMap
+import com.mapbox.maps.extension.compose.animation.viewport.rememberMapViewportState
+import com.mapbox.maps.extension.compose.annotation.generated.PointAnnotation
+import com.mapbox.maps.extension.compose.annotation.rememberIconImage
+import com.mapbox.maps.extension.compose.style.MapStyle
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ReportsAdmin(navController: NavController){
-    Scaffold (
+fun ReportsAdmin(navController: NavController) {
+    Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
@@ -82,7 +89,10 @@ fun ReportsAdmin(navController: NavController){
                 },
                 actions = {
                     SmallFloatingActionButton(
-                        onClick = { CreateReportController.GlobalData.notification.value = 0 },
+                        onClick = {
+                            navController.navigate(route = AppScreens.NotificationScreen.route)
+                            CreateReportController.GlobalData.notification.value = 0
+                        },
                         containerColor = Color.White,
                         contentColor = Color.Black
                     ) {
@@ -92,7 +102,6 @@ fun ReportsAdmin(navController: NavController){
                             modifier = Modifier.size(30.dp)
                         )
                         Badges(CreateReportController.GlobalData.notification.value)
-
                     }
                 }
             )
@@ -100,7 +109,7 @@ fun ReportsAdmin(navController: NavController){
         bottomBar = {
             NavigationBar {
                 NavigationBarItem(
-                    onClick = {navController.navigate(route = AppScreens.InicioAdminScreen.route)},
+                    onClick = { navController.navigate(route = AppScreens.InicioAdminScreen.route) },
                     selected = false,
                     icon = { Icon(imageVector = Icons.Default.Home, contentDescription = null) },
                     label = { Text("MENU") }
@@ -112,7 +121,7 @@ fun ReportsAdmin(navController: NavController){
                     label = { Text("REPORTES") }
                 )
                 NavigationBarItem(
-                    onClick = {navController.navigate(route = AppScreens.ProfileAdminScreen.route)},
+                    onClick = { navController.navigate(route = AppScreens.ProfileAdminScreen.route) },
                     selected = false,
                     icon = { Icon(imageVector = Icons.Default.Person, contentDescription = null) },
                     label = { Text("PERFIL") }
@@ -178,7 +187,7 @@ fun ListReports(reports: List<Report2>, innerPadding: PaddingValues, navControll
 
             ) {
                 Column {
-                    Row (
+                    Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .background(color = MaterialTheme.colorScheme.primary)
@@ -208,31 +217,93 @@ fun ListReports(reports: List<Report2>, innerPadding: PaddingValues, navControll
                     )
 
                 }
-                Column (
+                Column(
                     modifier = Modifier
                         .padding(horizontal = 10.dp, vertical = 5.dp)
                 ) {
-                    Text(text = "Titulo: " + report.title,
+                    Text(
+                        text = "Titulo: " + report.title,
                         fontWeight = FontWeight.Bold,
                         fontSize = 12.sp,
-                        )
-                    Text(text = "Categoria: " + report.categoria,
-                        fontSize = 12.sp,
-                        )
-                    Text(text = "Descripcion: "+report.description,
-                        fontSize = 12.sp,
-                        )
-                    Text(text = "Latitud: "+report.latitude,
-                        fontSize = 12.sp,
-                        )
-                    Text(text = "Longitud: "+report.longitude,
+                    )
+                    Text(
+                        text = "Categoria: " + report.categoria,
                         fontSize = 12.sp,
                     )
-                    Row (
+                    Text(
+                        text = "Descripcion: " + report.description,
+                        fontSize = 12.sp,
+                    )
+                    Text(
+                        text = "Ubicación: ",
+                        fontSize = 12.sp,
+                    )
+                    var latitude by remember { mutableStateOf(report.latitude) }
+                    var longitude by remember { mutableStateOf(report.longitude) }
+                    var pointClicked by remember { mutableStateOf<Point?>(null) }
+                    var markerResourceId by remember { mutableStateOf(R.drawable.red_marker) }
+
+                    val initialPoint = remember(latitude, longitude) {
+                        if (latitude.isNotEmpty() && longitude.isNotEmpty()) {
+                            Point.fromLngLat(longitude.toDouble(), latitude.toDouble())
+                        } else {
+                            null
+                        }
+                    }
+
+                    LaunchedEffect(latitude, longitude) {
+                        if (latitude.isNotEmpty() && longitude.isNotEmpty()) {
+                            pointClicked =
+                                Point.fromLngLat(longitude.toDouble(), latitude.toDouble())
+                        }
+                    }
+
+                    val marker = rememberIconImage(
+                        key = markerResourceId,
+                        painter = painterResource(markerResourceId)
+                    )
+                    MapboxMap(
+                        modifier = Modifier
+                            .padding(horizontal = 10.dp)
+                            .fillMaxWidth()
+                            .height(130.dp),
+                        mapViewportState = rememberMapViewportState {
+                            setCameraOptions {
+                                zoom(15.0)
+                                center(
+                                    initialPoint ?: Point.fromLngLat(
+                                        -75.6906164,
+                                        4.5292671
+                                    )
+                                )
+                                pitch(0.0)
+                                bearing(0.0)
+                            }
+                        },
+                        onMapClickListener = { point ->
+                            pointClicked = point
+                            latitude = point.latitude().toString()
+                            longitude = point.longitude().toString()
+                            true
+                        },
+                        style = { MapStyle(style = Style.STANDARD_SATELLITE) }
+                    ) {
+                        pointClicked?.let { point ->
+                            PointAnnotation(
+                                point = point
+                            )
+                            {
+                                iconImage = marker
+                            }
+                        }
+                    }
+
+                    Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.End
-                    ){
-                        Text("Verificado:",
+                    ) {
+                        Text(
+                            "Verificado:",
                             modifier = Modifier
                                 .padding(top = 12.dp)
                         )
@@ -241,13 +312,19 @@ fun ListReports(reports: List<Report2>, innerPadding: PaddingValues, navControll
                             onCheckedChange = {},
                         )
                     }
-                    Row (
+                    Row(
                         modifier = Modifier
                             .fillMaxSize(),
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
                         IconButton(
-                            onClick = {navController.navigate(route = AppScreens.CommentsScreen.createRoute(report.idReport))},
+                            onClick = {
+                                navController.navigate(
+                                    route = AppScreens.CommentsScreen.createRoute(
+                                        report.idReport
+                                    )
+                                )
+                            },
                             colors = IconButtonDefaults.iconButtonColors(Color.Transparent)
                         ) {
                             Icon(
@@ -256,13 +333,13 @@ fun ListReports(reports: List<Report2>, innerPadding: PaddingValues, navControll
                                 tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(25.dp)
                             )
-
+                            Badges(report.countMessages)
                         }
                         val check = ReportsAdminController()
                         Button(
                             onClick = { check.updateCheck(report.idReport) },
 
-                        ) {
+                            ) {
                             Icon(
                                 imageVector = Icons.Default.Check,
                                 contentDescription = null,
@@ -273,7 +350,7 @@ fun ListReports(reports: List<Report2>, innerPadding: PaddingValues, navControll
                         }
                         val delete = MyReportsController()
                         Button(
-                            onClick = {delete.deleteReport(report.idReport, report.imageUrl!!)},
+                            onClick = { delete.deleteReport(report.idReport, report.imageUrl!!) },
                             colors = ButtonDefaults.buttonColors(Color.Red)
                         ) {
                             Text(text = "Eliminar")

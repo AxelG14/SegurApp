@@ -77,7 +77,10 @@ fun Inicio(navController: NavController) {
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text("Inicio", fontSize = 20.sp) },
+                title = { Text("Inicio",
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White,
+                    fontSize = 25.sp) },
                 navigationIcon = {
                     Image(
                         painter = painterResource(R.drawable.logo2),
@@ -137,25 +140,13 @@ fun Inicio(navController: NavController) {
                     .background(Color.Black),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                var searchQuery by remember { mutableStateOf("") }
-
-                OutlinedTextField(
-                    value = searchQuery,
-                    onValueChange = { searchQuery = it },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(10.dp),
-                    placeholder = { Text("Buscar...") },
-                    shape = MaterialTheme.shapes.medium,
-                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Buscar") },
-                    singleLine = true,
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
-                        focusedBorderColor = Color.White,
-                        unfocusedBorderColor = Color.Gray,
-                        cursorColor = Color.White
-                    )
+                Spacer(modifier = Modifier.height(15.dp))
+                Text(text = "MAPA",
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White,
+                    fontSize = 20.sp
                 )
-
+                Spacer(modifier = Modifier.height(10.dp))
 
                 var pointClicked by remember { mutableStateOf<Point?>(null) }
                 var markerResourceId by remember { mutableStateOf(R.drawable.red_marker) }
@@ -188,7 +179,7 @@ fun Inicio(navController: NavController) {
 
                 }
 
-                Spacer(modifier = Modifier.height(5.dp))
+                Spacer(modifier = Modifier.height(10.dp))
 
                 Button(
                     onClick = { navController.navigate(AppScreens.CreateReportScreen.route) },
