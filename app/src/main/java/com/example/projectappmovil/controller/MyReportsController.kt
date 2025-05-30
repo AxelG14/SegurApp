@@ -32,13 +32,14 @@ class MyReportsController {
             }
     }
 
-    fun editReport(reportId: String, title: String, categoria: String, description: String, ubication: String){
+    fun editReport(reportId: String, title: String, categoria: String, description: String, latitude: String, longitude: String){
         val db = Firebase.firestore
         val data = mapOf(
             "titulo" to title,
             "categoria" to categoria,
             "descripcion" to description,
-            "ubicacion" to ubication
+            "latitude" to latitude,
+            "longitude" to longitude
             )
         db.collection("reportes")
             .document(reportId)

@@ -1,4 +1,3 @@
-
 package com.example.projectappmovil
 
 import androidx.compose.foundation.Image
@@ -73,6 +72,13 @@ import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.mapbox.geojson.Point
+import com.mapbox.maps.Style
+import com.mapbox.maps.extension.compose.MapboxMap
+import com.mapbox.maps.extension.compose.animation.viewport.rememberMapViewportState
+import com.mapbox.maps.extension.compose.annotation.generated.PointAnnotation
+import com.mapbox.maps.extension.compose.annotation.rememberIconImage
+import com.mapbox.maps.extension.compose.style.MapStyle
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -81,36 +87,39 @@ fun AllReports(navController: NavHostController) {
         bottomBar = {
             NavigationBar {
                 NavigationBarItem(
-                    onClick = {navController.navigate(route = AppScreens.InicioScreen.route)},
+                    onClick = { navController.navigate(route = AppScreens.InicioScreen.route) },
                     selected = false,
                     icon = { Icon(imageVector = Icons.Default.Home, contentDescription = null) },
                     label = { Text("MENU") }
                 )
                 NavigationBarItem(
-                    onClick = {navController.navigate(route = AppScreens.AllReportsScreen.route)},
+                    onClick = { navController.navigate(route = AppScreens.AllReportsScreen.route) },
                     selected = true,
                     icon = { Icon(imageVector = Icons.Default.Place, contentDescription = null) },
                     label = { Text("REPORTES") }
                 )
                 NavigationBarItem(
-                    onClick = {navController.navigate(route = AppScreens.MyReportsScreen.route)},
+                    onClick = { navController.navigate(route = AppScreens.MyReportsScreen.route) },
                     selected = false,
                     icon = { Icon(imageVector = Icons.Default.Create, contentDescription = null) },
                     label = { Text("PROPIOS") }
                 )
                 NavigationBarItem(
-                    onClick = {navController.navigate(route = AppScreens.ProfileScreen.route)},
+                    onClick = { navController.navigate(route = AppScreens.ProfileScreen.route) },
                     selected = false,
-                    icon = { Icon(imageVector = Icons.Default.Person, contentDescription = null)},
+                    icon = { Icon(imageVector = Icons.Default.Person, contentDescription = null) },
                     label = { Text("PERFIL") }
                 )
             }
         },
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text("Reportes",
-                    fontSize = 20.sp
-                ) },
+                title = {
+                    Text(
+                        "Reportes",
+                        fontSize = 20.sp
+                    )
+                },
                 navigationIcon = {
                     Image(
                         painter = painterResource(R.drawable.logo2),
@@ -119,9 +128,11 @@ fun AllReports(navController: NavHostController) {
                     )
                 },
                 actions = {
-                    SmallFloatingActionButton (
-                        onClick = { navController.navigate(route = AppScreens.NotificationScreen.route)
-                            CreateReportController.GlobalData.notification.value = 0 },
+                    SmallFloatingActionButton(
+                        onClick = {
+                            navController.navigate(route = AppScreens.NotificationScreen.route)
+                            CreateReportController.GlobalData.notification.value = 0
+                        },
                         containerColor = Color.White,
                         contentColor = Color.Black
                     ) {
@@ -154,7 +165,8 @@ fun AllReports(navController: NavHostController) {
             ExposedDropdownMenuBox(
                 expanded = expanded,
                 onExpandedChange = { expanded = !expanded },
-                modifier = Modifier.fillMaxWidth(0.9f)
+                modifier = Modifier
+                    .fillMaxWidth(0.9f)
                     .padding(vertical = 8.dp)
             ) {
                 TextField(
@@ -169,7 +181,11 @@ fun AllReports(navController: NavHostController) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .menuAnchor()
-                        .border(1.dp, MaterialTheme.colorScheme.primary, shape = MaterialTheme.shapes.medium)
+                        .border(
+                            1.dp,
+                            MaterialTheme.colorScheme.primary,
+                            shape = MaterialTheme.shapes.medium
+                        )
                 )
 
                 ExposedDropdownMenu(
@@ -215,7 +231,11 @@ fun Badges(count: Int) {
 }
 
 @Composable
-fun LoadImageFromFirestore3(innerPadding: PaddingValues, navController: NavController, categoria : String) {
+fun LoadImageFromFirestore3(
+    innerPadding: PaddingValues,
+    navController: NavController,
+    categoria: String
+) {
     val db = Firebase.firestore
     var reports by remember { mutableStateOf<List<Report2>>(emptyList()) }
     LaunchedEffect(categoria) {
@@ -231,7 +251,8 @@ fun LoadImageFromFirestore3(innerPadding: PaddingValues, navController: NavContr
                         title = document.getString("titulo") ?: "",
                         categoria = document.getString("categoria") ?: "",
                         description = document.getString("descripcion") ?: "",
-                        ubication = document.getString("ubicacion") ?: "",
+                        latitude = document.getString("latitude") ?: "",
+                        longitude = document.getString("longitude") ?: "",
                         nombre = document.getString("nombre") ?: "",
                         idReport = document.getString("idReport") ?: "",
                         check = document.getBoolean("check") ?: false,
@@ -248,7 +269,14 @@ fun LoadImageFromFirestore3(innerPadding: PaddingValues, navController: NavContr
                     else -> newReports
                 }
                 val categorias =
-                    listOf("Todos", "Seguridad", "Infraestructura", "Mascotas", "Comunidad", "Emergencia")
+                    listOf(
+                        "Todos",
+                        "Seguridad",
+                        "Infraestructura",
+                        "Mascotas",
+                        "Comunidad",
+                        "Emergencia"
+                    )
             }
     }
     MyLazyColumn2(reports = reports, innerPadding, navController)
@@ -259,7 +287,8 @@ data class Report2(
     val title: String,
     val categoria: String,
     val description: String,
-    val ubication: String,
+    val latitude: String,
+    val longitude: String,
     val nombre: String,
     val idReport: String,
     val check: Boolean,
@@ -268,7 +297,11 @@ data class Report2(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyLazyColumn2(reports: List<Report2>, innerPadding: PaddingValues, navController: NavController) {
+fun MyLazyColumn2(
+    reports: List<Report2>,
+    innerPadding: PaddingValues,
+    navController: NavController
+) {
     LazyColumn(
         modifier = Modifier
             .padding(innerPadding)
@@ -287,7 +320,7 @@ fun MyLazyColumn2(reports: List<Report2>, innerPadding: PaddingValues, navContro
 
             ) {
                 Column {
-                    Row (
+                    Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .background(color = MaterialTheme.colorScheme.primary)
@@ -313,28 +346,95 @@ fun MyLazyColumn2(reports: List<Report2>, innerPadding: PaddingValues, navContro
                         contentDescription = null,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(200.dp)
+                            .height(150.dp)
                     )
 
                 }
-                Column (
+                Column(
                     modifier = Modifier
                         .background(color = Color.DarkGray),
                 ) {
-                    Text(text = "Titulo: " + report.title,
+                    Text(
+                        text = "Titulo: " + report.title,
                         fontWeight = FontWeight.Bold,
                         fontSize = 12.sp,
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp))
-                    Text(text = "Categoria: " + report.categoria,
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
+                    )
+                    Text(
+                        text = "Categoria: " + report.categoria,
                         fontSize = 12.sp,
-                        modifier = Modifier.padding(horizontal = 10.dp))
-                    Text(text = "Descripcion: "+report.description,
+                        modifier = Modifier.padding(horizontal = 10.dp)
+                    )
+                    Text(
+                        text = "Descripcion: " + report.description,
                         fontSize = 12.sp,
-                        modifier = Modifier.padding(horizontal = 10.dp))
-                    Text(text = "Ubicacion: "+report.ubication,
+                        modifier = Modifier.padding(horizontal = 10.dp)
+                    )
+                    Text(
+                        text = "Ubicación: ",
                         fontSize = 12.sp,
-                        modifier = Modifier.padding(horizontal = 10.dp))
-                    Row (
+                        modifier = Modifier.padding(horizontal = 10.dp)
+                    )
+                    var latitude by remember { mutableStateOf(report.latitude) }
+                    var longitude by remember { mutableStateOf(report.longitude) }
+                    var pointClicked by remember { mutableStateOf<Point?>(null) }
+                    var markerResourceId by remember { mutableStateOf(R.drawable.red_marker) }
+
+                    val initialPoint = remember(latitude, longitude) {
+                        if (latitude.isNotEmpty() && longitude.isNotEmpty()) {
+                            Point.fromLngLat(longitude.toDouble(), latitude.toDouble())
+                        } else {
+                            null
+                        }
+                    }
+
+                    LaunchedEffect(latitude, longitude) {
+                        if (latitude.isNotEmpty() && longitude.isNotEmpty()) {
+                            pointClicked =
+                                Point.fromLngLat(longitude.toDouble(), latitude.toDouble())
+                        }
+                    }
+
+                    val marker = rememberIconImage(
+                        key = markerResourceId,
+                        painter = painterResource(markerResourceId)
+                    )
+
+                    MapboxMap(
+                        modifier = Modifier
+                            .padding(horizontal = 10.dp)
+                            .fillMaxWidth()
+                            .height(130.dp),
+                        mapViewportState = rememberMapViewportState {
+                            setCameraOptions {
+                                zoom(15.0)
+                                center(
+                                    initialPoint ?: Point.fromLngLat(
+                                        -75.6906164,
+                                        4.5292671
+                                    )
+                                )
+                                pitch(0.0)
+                                bearing(0.0)
+                            }
+                        },
+                        onMapClickListener = { point ->
+                            pointClicked = point
+                            latitude = point.latitude().toString()
+                            longitude = point.longitude().toString()
+                            true
+                        },
+                        style = { MapStyle(style = Style.STANDARD_SATELLITE) }
+                    ) {
+                        pointClicked?.let { point ->
+                            PointAnnotation(
+                                point = point)
+                            {
+                                iconImage = marker
+                            }
+                        }
+                    }
+                    Row(
                         modifier = Modifier
                             .padding(horizontal = 10.dp, vertical = 5.dp)
                             .fillMaxSize(),
@@ -343,7 +443,7 @@ fun MyLazyColumn2(reports: List<Report2>, innerPadding: PaddingValues, navContro
                         IconButton(
                             onClick = {},
                             colors = IconButtonDefaults.iconButtonColors(Color.Transparent),
-                        ){
+                        ) {
                             Icon(
                                 imageVector = Icons.Default.Star,
                                 contentDescription = null,
@@ -353,9 +453,15 @@ fun MyLazyColumn2(reports: List<Report2>, innerPadding: PaddingValues, navContro
                         }
 
                         IconButton(
-                            onClick = {navController.navigate(route = AppScreens.CommentsScreen.createRoute(report.idReport))},
+                            onClick = {
+                                navController.navigate(
+                                    route = AppScreens.CommentsScreen.createRoute(
+                                        report.idReport
+                                    )
+                                )
+                            },
                             colors = IconButtonDefaults.iconButtonColors(Color.Transparent)
-                        ){
+                        ) {
                             Icon(
                                 imageVector = Icons.Default.MailOutline,
                                 contentDescription = null,
@@ -365,9 +471,9 @@ fun MyLazyColumn2(reports: List<Report2>, innerPadding: PaddingValues, navContro
                             Badges(report.countMessages)
                         }
 
-
                         Row {
-                            Text("Verificado",
+                            Text(
+                                "Verificado",
                                 modifier = Modifier
                                     .padding(top = 12.dp, start = 7.dp)
                             )

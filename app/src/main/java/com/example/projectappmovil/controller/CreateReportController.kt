@@ -13,8 +13,8 @@ import com.mapbox.geojson.Point
 class CreateReportController {
     val db = Firebase.firestore
     fun saveReport(
-        userId: String, titulo: String, categoria: String, descripcion: String, imageUrl: String, name: String, latitude: Double,
-        longitude: Double
+        userId: String, titulo: String, categoria: String, descripcion: String, imageUrl: String, name: String, latitude: String,
+        longitude: String
     ) {
         val report = hashMapOf(
             "titulo" to titulo,
@@ -51,16 +51,17 @@ class CreateReportController {
         titulo: String,
         categoria: String,
         descripcion: String,
-        imageUri: Uri,
+        imageUri: String,
         nombre: String,
-        latitude: Double,
-        longitude: Double
+        latitude: String,
+        longitude: String
     ) {
         val storage = FirebaseStorage.getInstance()
         val storageRef = storage.reference
         val imageRef = storageRef.child("/$userId/images/${UUID.randomUUID()}.jpg")
 
-        val uploadTask = imageRef.putFile(imageUri)
+        val uri = Uri.parse(imageUri)
+        val uploadTask = imageRef.putFile(uri)
 
         uploadTask.addOnSuccessListener {
             imageRef.downloadUrl.addOnSuccessListener { uri ->

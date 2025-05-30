@@ -63,24 +63,6 @@ fun Password(navController: NavController) {
             }
         )
 
-        var password by remember { mutableStateOf("") }
-        TextField(
-            value = password,
-            onValueChange = { newPassword -> password = newPassword },
-            label = { Text("NUEVA CONTRASEÑA") },
-            visualTransformation = PasswordVisualTransformation(), // Oculta la contraseña
-            keyboardOptions = KeyboardOptions.Default.copy(
-                keyboardType = KeyboardType.Password
-            ),
-            modifier = Modifier
-                .padding(top = 40.dp)
-                .fillMaxWidth(0.9f),
-            leadingIcon = {
-                Icon(imageVector = Icons.Default.Lock, contentDescription = null)
-            }
-        )
-
-        // esta alerta es la misma del login la traje para aca
         var showErrorDialog by remember { mutableStateOf(false) }
         if (showErrorDialog) {
             AlertDialog(
@@ -97,14 +79,11 @@ fun Password(navController: NavController) {
             )
         }
 
-        // implemente la alerta a este boton ya que este valida los campos vacios
-        // es una alerta de toda la vida campos vacios
         Button(
             onClick = {
-                if (email.isBlank() || password.isBlank()) {
+                if (email.isBlank()) {
                     showErrorDialog = true
                 } else {
-                    // toca ver donde se dirige este boton
                 }
             },
             modifier = Modifier
@@ -114,7 +93,6 @@ fun Password(navController: NavController) {
         ) {
             Text(text = "CONFIRMAR")
         }
-
 
         Button(
             onClick = { navController.popBackStack() },

@@ -65,9 +65,9 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    implementation("com.mapbox.maps:android:11.11.0")
-    implementation("com.mapbox.extension:maps-compose:11.11.0")
+    implementation("com.mapbox.maps:android:11.12.2")
+    implementation("com.mapbox.extension:maps-compose:11.12.2")
     implementation("androidx.compose.foundation:foundation:1.3.1")
-    implementation ("com.mapbox.geojson:geojson:6.12.0")
+    //implementation("com.mapbox.geojson:geojson:6.12.0")
 
 }

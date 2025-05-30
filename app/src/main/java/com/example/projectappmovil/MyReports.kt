@@ -1,4 +1,3 @@
-
 package com.example.projectappmovil
 
 import androidx.compose.foundation.Image
@@ -71,6 +70,13 @@ import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.mapbox.geojson.Point
+import com.mapbox.maps.Style
+import com.mapbox.maps.extension.compose.MapboxMap
+import com.mapbox.maps.extension.compose.animation.viewport.rememberMapViewportState
+import com.mapbox.maps.extension.compose.annotation.generated.PointAnnotation
+import com.mapbox.maps.extension.compose.annotation.rememberIconImage
+import com.mapbox.maps.extension.compose.style.MapStyle
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -82,25 +88,25 @@ fun Reports1(navController: NavController) {
         bottomBar = {
             NavigationBar {
                 NavigationBarItem(
-                    onClick = {navController.navigate(route = AppScreens.InicioScreen.route)},
+                    onClick = { navController.navigate(route = AppScreens.InicioScreen.route) },
                     selected = false,
                     icon = { Icon(imageVector = Icons.Default.Home, contentDescription = null) },
                     label = { Text("MENU") }
                 )
                 NavigationBarItem(
-                    onClick = {navController.navigate(route = AppScreens.AllReportsScreen.route)},
+                    onClick = { navController.navigate(route = AppScreens.AllReportsScreen.route) },
                     selected = false,
                     icon = { Icon(imageVector = Icons.Default.Place, contentDescription = null) },
                     label = { Text("REPORTES") }
                 )
                 NavigationBarItem(
-                    onClick = {navController.navigate(route = AppScreens.MyReportsScreen.route)},
+                    onClick = { navController.navigate(route = AppScreens.MyReportsScreen.route) },
                     selected = true,
                     icon = { Icon(imageVector = Icons.Default.Create, contentDescription = null) },
                     label = { Text("PROPIOS", textAlign = TextAlign.Center) },
                 )
                 NavigationBarItem(
-                    onClick = {navController.navigate(route = AppScreens.ProfileScreen.route)},
+                    onClick = { navController.navigate(route = AppScreens.ProfileScreen.route) },
                     selected = false,
                     icon = { Icon(imageVector = Icons.Default.Person, contentDescription = null) },
                     label = { Text("PERFIL") }
@@ -109,9 +115,12 @@ fun Reports1(navController: NavController) {
         },
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text("Mis Reportes",
-                    fontSize = 20.sp
-                ) },
+                title = {
+                    Text(
+                        "Mis Reportes",
+                        fontSize = 20.sp
+                    )
+                },
                 navigationIcon = {
                     Image(
                         painter = painterResource(R.drawable.logo2),
@@ -120,9 +129,11 @@ fun Reports1(navController: NavController) {
                     )
                 },
                 actions = {
-                    SmallFloatingActionButton (
-                        onClick = { navController.navigate(route = AppScreens.NotificationScreen.route)
-                            CreateReportController.GlobalData.notification.value = 0 },
+                    SmallFloatingActionButton(
+                        onClick = {
+                            navController.navigate(route = AppScreens.NotificationScreen.route)
+                            CreateReportController.GlobalData.notification.value = 0
+                        },
                         containerColor = Color.White,
                         contentColor = Color.Black
                     ) {
@@ -143,7 +154,11 @@ fun Reports1(navController: NavController) {
 }
 
 @Composable
-fun LoadImageFromFirestore2(userId: String, innerPadding: PaddingValues, navController: NavController) {
+fun LoadImageFromFirestore2(
+    userId: String,
+    innerPadding: PaddingValues,
+    navController: NavController
+) {
     val db = Firebase.firestore
     var reports by remember { mutableStateOf<List<Report>>(emptyList()) }
 
@@ -161,7 +176,8 @@ fun LoadImageFromFirestore2(userId: String, innerPadding: PaddingValues, navCont
                         title = document.getString("titulo") ?: "",
                         categoria = document.getString("categoria") ?: "",
                         description = document.getString("descripcion") ?: "",
-                        ubication = document.getString("ubicacion") ?: "",
+                        latitude = document.getString("latitude") ?: "",
+                        longitude = document.getString("longitude") ?: "",
                         nombre = document.getString("nombre") ?: "",
                         idReport = document.getString("idReport") ?: ""
                     )
@@ -178,7 +194,8 @@ data class Report(
     val title: String,
     val categoria: String,
     val description: String,
-    val ubication: String,
+    val latitude: String,
+    val longitude: String,
     val nombre: String,
     val idReport: String
 )
@@ -206,8 +223,8 @@ fun MyLazyColumn(reports: List<Report>, innerPadding: PaddingValues, navControll
                 colors = CardDefaults.cardColors(Color.Gray)
 
             ) {
-                Column{
-                    Row (
+                Column {
+                    Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .background(color = MaterialTheme.colorScheme.primary)
@@ -237,7 +254,7 @@ fun MyLazyColumn(reports: List<Report>, innerPadding: PaddingValues, navControll
                     )
 
                 }
-                Column (
+                Column(
                     modifier = Modifier
                         .background(color = Color.DarkGray),
                 ) {
@@ -260,11 +277,15 @@ fun MyLazyColumn(reports: List<Report>, innerPadding: PaddingValues, navControll
                     var expanded by remember { mutableStateOf(false) }
                     ExposedDropdownMenuBox(
                         expanded = expanded,
-                        onExpandedChange = { if (!isEditing) {
-                            expanded = !expanded
-                        } },
-                        modifier = Modifier.fillMaxWidth(0.9f).padding(vertical = 8.dp)
-                    ){
+                        onExpandedChange = {
+                            if (!isEditing) {
+                                expanded = !expanded
+                            }
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth(0.9f)
+                            .padding(vertical = 8.dp)
+                    ) {
                         TextField(
                             value = categoria,
                             onValueChange = { categoria = it },
@@ -273,7 +294,7 @@ fun MyLazyColumn(reports: List<Report>, innerPadding: PaddingValues, navControll
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .menuAnchor(),
-                            trailingIcon = {ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)},
+                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                             textStyle = TextStyle(fontSize = 12.sp)
                         )
                         ExposedDropdownMenu(
@@ -302,17 +323,66 @@ fun MyLazyColumn(reports: List<Report>, innerPadding: PaddingValues, navControll
                             .fillMaxWidth(),
                         textStyle = TextStyle(fontSize = 12.sp)
                     )
-                    var ubication by remember { mutableStateOf(report.ubication) }
-                    TextField(
-                        value = ubication,
-                        onValueChange = { ubication = it },
-                        label = { Text("Ubicacion") },
-                        readOnly = isEditing,
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        textStyle = TextStyle(fontSize = 12.sp)
+
+                    var latitude by remember { mutableStateOf(report.latitude) }
+                    var longitude by remember { mutableStateOf(report.longitude) }
+                    var pointClicked by remember { mutableStateOf<Point?>(null) }
+                    var markerResourceId by remember { mutableStateOf(R.drawable.red_marker) }
+
+                    val initialPoint = remember(latitude, longitude) {
+                        if (latitude.isNotEmpty() && longitude.isNotEmpty()) {
+                            Point.fromLngLat(longitude.toDouble(), latitude.toDouble())
+                        } else {
+                            null
+                        }
+                    }
+
+                    LaunchedEffect(latitude, longitude) {
+                        if (latitude.isNotEmpty() && longitude.isNotEmpty()) {
+                            pointClicked =
+                                Point.fromLngLat(longitude.toDouble(), latitude.toDouble())
+                        }
+                    }
+
+                    val marker = rememberIconImage(
+                        key = markerResourceId,
+                        painter = painterResource(markerResourceId)
                     )
-                    Row (
+
+                    MapboxMap(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(130.dp),
+                        mapViewportState = rememberMapViewportState {
+                            setCameraOptions {
+                                zoom(15.0)
+                                center(
+                                    initialPoint ?: Point.fromLngLat(
+                                        -75.6906164,
+                                        4.5292671
+                                    )
+                                )
+                                pitch(0.0)
+                                bearing(0.0)
+                            }
+                        },
+                        onMapClickListener = { point ->
+                            pointClicked = point
+                            latitude = point.latitude().toString()
+                            longitude = point.longitude().toString()
+                            true
+                        },
+                        style = { MapStyle(style = Style.STANDARD_SATELLITE) }
+                    ) {
+                        pointClicked?.let { point ->
+                            PointAnnotation(
+                                point = point)
+                                {
+                                    iconImage = marker
+                                }
+                        }
+                    }
+                    Row(
                         modifier = Modifier
                             .padding(10.dp)
                             .fillMaxSize(),
@@ -321,7 +391,7 @@ fun MyLazyColumn(reports: List<Report>, innerPadding: PaddingValues, navControll
                         IconButton(
                             onClick = {},
                             colors = IconButtonDefaults.iconButtonColors(Color.Transparent)
-                        ){
+                        ) {
                             Icon(
                                 imageVector = Icons.Default.Star,
                                 contentDescription = null,
@@ -330,7 +400,13 @@ fun MyLazyColumn(reports: List<Report>, innerPadding: PaddingValues, navControll
                             )
                         }
                         IconButton(
-                            onClick = {navController.navigate(route = AppScreens.CommentsScreen.createRoute(report.idReport))},
+                            onClick = {
+                                navController.navigate(
+                                    route = AppScreens.CommentsScreen.createRoute(
+                                        report.idReport
+                                    )
+                                )
+                            },
 
                             colors = IconButtonDefaults.iconButtonColors(Color.Transparent)
                         ) {
@@ -343,7 +419,7 @@ fun MyLazyColumn(reports: List<Report>, innerPadding: PaddingValues, navControll
                         }
                         Spacer(modifier = Modifier.padding(horizontal = 10.dp))
                         Button(
-                            onClick = {myReport.deleteReport(report.idReport, report.imageUrl!!)},
+                            onClick = { myReport.deleteReport(report.idReport, report.imageUrl!!) },
                         ) {
                             Text(text = "Eliminar")
                         }
@@ -362,14 +438,23 @@ fun MyLazyColumn(reports: List<Report>, innerPadding: PaddingValues, navControll
                         } else {
                             Button(
                                 onClick = {
-                                    if (title.isNotEmpty() && categoria.isNotEmpty() && description.isNotEmpty() && ubication.isNotEmpty()){
-                                    myReport.editReport(report.idReport, title, categoria, description, ubication)
+                                    if (title.isNotEmpty() && categoria.isNotEmpty() && description.isNotEmpty() && latitude.isNotEmpty()
+                                        && longitude.isNotEmpty()
+                                    ) {
+                                        myReport.editReport(
+                                            report.idReport,
+                                            title,
+                                            categoria,
+                                            description,
+                                            latitude,
+                                            longitude
+                                        )
                                         showDialog2 = true
                                         isEditing = true
                                     } else {
                                         showDialog = true
                                     }
-                                          },
+                                },
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = MaterialTheme.colorScheme.primary
                                 )
@@ -378,29 +463,29 @@ fun MyLazyColumn(reports: List<Report>, innerPadding: PaddingValues, navControll
                             }
                         }
                     }
-                    if (showDialog){
+                    if (showDialog) {
                         BasicAlertDialog(
-                            onDismissRequest = {showDialog = false}
+                            onDismissRequest = { showDialog = false }
 
-                        ){
+                        ) {
                             Text(text = "Debe llenar todos los campos")
 
                             Button(
-                                onClick = {showDialog = false}
+                                onClick = { showDialog = false }
                             ) {
                                 Text(text = "Aceptar")
                             }
                         }
                     }
-                    if (showDialog2){
+                    if (showDialog2) {
                         BasicAlertDialog(
-                            onDismissRequest = {showDialog2 = false}
+                            onDismissRequest = { showDialog2 = false }
 
-                        ){
+                        ) {
                             Text(text = "Se actualizo el reporte")
 
                             Button(
-                                onClick = {showDialog2 = false}
+                                onClick = { showDialog2 = false }
                             ) {
                                 Text(text = "Aceptar")
                             }

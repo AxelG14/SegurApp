@@ -21,7 +21,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,7 +36,6 @@ import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.projectappmovil.controller.CreateReportController
 import com.example.projectappmovil.controller.ProfileController
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -153,7 +151,8 @@ fun CreateReportEmerge(navController: NavController) {
                 } else if (userId != null && imageUri != null) {
                     imageUri?.let { uri ->
                         createReportController.saveReportImageToFirebaseStorage(
-                            userId, titulo, categoria, descripcion, ubicacion, uri, nombre.toString()
+                            userId, titulo, categoria, descripcion, ubicacion,
+                            uri.toString(), nombre.toString(), longitude = TODO(),
                         )
                         CreateReportController.GlobalData.notification.value += 1
 

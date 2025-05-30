@@ -2,9 +2,7 @@
 
 package com.example.projectappmovil
 
-import android.content.Context
-import android.location.Location
-import android.util.Log
+
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -84,7 +82,7 @@ fun Inicio(navController: NavController) {
                     Image(
                         painter = painterResource(R.drawable.logo2),
                         contentDescription = null,
-                        modifier = Modifier.size(70.dp)
+                        modifier = Modifier.size(60.dp)
                     )
                 },
                 actions = {
@@ -158,14 +156,22 @@ fun Inicio(navController: NavController) {
                     )
                 )
 
+
                 var pointClicked by remember { mutableStateOf<Point?>(null) }
                 var markerResourceId by remember { mutableStateOf(R.drawable.red_marker) }
                 var marker = rememberIconImage(key = markerResourceId, painter = painterResource(markerResourceId))
 
+                val mapViewportState = rememberMapViewportState {
+                    setCameraOptions {
+                        center(Point.fromLngLat(-74.0817, 4.7110))
+                        zoom(5.0)
+                    }
+                }
+
                 MapboxMap(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(530.dp),
+                        .height(430.dp),
                     mapViewportState = mapViewportState,
                     onMapClickListener = { point ->
                         pointClicked = point
@@ -179,9 +185,10 @@ fun Inicio(navController: NavController) {
                             enabled = true
                         }
                     }
+
                 }
 
-                Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(5.dp))
 
                 Button(
                     onClick = { navController.navigate(AppScreens.CreateReportScreen.route) },
@@ -193,6 +200,7 @@ fun Inicio(navController: NavController) {
                 ) {
                     Text("CREAR REPORTE", fontWeight = FontWeight.Bold)
                 }
+
             }
         }
     )

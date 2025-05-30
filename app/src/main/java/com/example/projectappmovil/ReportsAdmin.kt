@@ -144,7 +144,8 @@ fun LoadImage(innerPadding: PaddingValues, navController: NavController) {
                         title = document.getString("titulo") ?: "",
                         categoria = document.getString("categoria") ?: "",
                         description = document.getString("descripcion") ?: "",
-                        ubication = document.getString("ubicacion") ?: "",
+                        latitude = document.getString("latitude") ?: "",
+                        longitude = document.getString("longitude") ?: "",
                         nombre = document.getString("nombre") ?: "",
                         idReport = document.getString("idReport") ?: "",
                         check = document.getBoolean("check") ?: false,
@@ -221,9 +222,12 @@ fun ListReports(reports: List<Report2>, innerPadding: PaddingValues, navControll
                     Text(text = "Descripcion: "+report.description,
                         fontSize = 12.sp,
                         )
-                    Text(text = "Ubicacion: "+report.ubication,
+                    Text(text = "Latitud: "+report.latitude,
                         fontSize = 12.sp,
                         )
+                    Text(text = "Longitud: "+report.longitude,
+                        fontSize = 12.sp,
+                    )
                     Row (
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.End
