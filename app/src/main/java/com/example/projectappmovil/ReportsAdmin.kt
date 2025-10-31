@@ -76,7 +76,7 @@ fun ReportsAdmin(navController: NavController) {
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        "REPORTES",
+                        "ACCIDENTES",
                         fontSize = 20.sp
                     )
                 },
@@ -118,7 +118,7 @@ fun ReportsAdmin(navController: NavController) {
                     onClick = {},
                     selected = true,
                     icon = { Icon(imageVector = Icons.Default.Create, contentDescription = null) },
-                    label = { Text("REPORTES") }
+                    label = { Text("ACCIDENTES") }
                 )
                 NavigationBarItem(
                     onClick = { navController.navigate(route = AppScreens.ProfileAdminScreen.route) },

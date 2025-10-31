@@ -97,7 +97,7 @@ fun Reports1(navController: NavController) {
                     onClick = { navController.navigate(route = AppScreens.AllReportsScreen.route) },
                     selected = false,
                     icon = { Icon(imageVector = Icons.Default.Place, contentDescription = null) },
-                    label = { Text("REPORTES") }
+                    label = { Text("ACCIDENTES") }
                 )
                 NavigationBarItem(
                     onClick = { navController.navigate(route = AppScreens.MyReportsScreen.route) },

@@ -96,7 +96,7 @@ fun AllReports(navController: NavHostController) {
                     onClick = { navController.navigate(route = AppScreens.AllReportsScreen.route) },
                     selected = true,
                     icon = { Icon(imageVector = Icons.Default.Place, contentDescription = null) },
-                    label = { Text("REPORTES") }
+                    label = { Text("ACCIDENTES") }
                 )
                 NavigationBarItem(
                     onClick = { navController.navigate(route = AppScreens.MyReportsScreen.route) },
@@ -116,7 +116,7 @@ fun AllReports(navController: NavHostController) {
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        "Reportes",
+                        "Accidentes",
                         fontSize = 20.sp
                     )
                 },
@@ -152,7 +152,7 @@ fun AllReports(navController: NavHostController) {
     ) { innerPadding ->
         var expanded by remember { mutableStateOf(false) }
         val categorias =
-            listOf("Todos", "Seguridad", "Infraestructura", "Mascotas", "Comunidad", "Emergencia")
+            listOf("Todos", "Trafico", "Natural", "Incendio")
         var categoria by remember { mutableStateOf(categorias.first()) }
         Column(
             modifier = Modifier

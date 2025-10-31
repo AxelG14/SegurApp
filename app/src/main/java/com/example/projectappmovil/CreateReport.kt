@@ -128,7 +128,7 @@ fun CreateReport(navController: NavController) {
                     onClick = { navController.navigate(route = AppScreens.AllReportsScreen.route) },
                     selected = false,
                     icon = { Icon(imageVector = Icons.Default.Place, contentDescription = null) },
-                    label = { Text("REPORTS") }
+                    label = { Text("ACCIDENTES") }
                 )
                 NavigationBarItem(
                     onClick = { navController.navigate(route = AppScreens.MyReportsScreen.route) },
@@ -152,7 +152,7 @@ fun CreateReport(navController: NavController) {
     ) { innerPadding ->
 
         var titulo by remember { mutableStateOf("") }
-        val categorias = listOf("Seguridad", "Infraestructura", "Mascotas", "Comunidad")
+        val categorias = listOf("Trafico", "Natural", "Incendio")
         var categoria by remember { mutableStateOf("") }
         var expanded by remember { mutableStateOf(false) }
         var descripcion by remember { mutableStateOf("") }
@@ -185,7 +185,7 @@ fun CreateReport(navController: NavController) {
         ) {
             item {
                 Text(
-                    text = "CREAR REPORTE",
+                    text = "CREAR REPORTE DE ACCIDENTE",
                     fontSize = 25.sp,
                     color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Bold,

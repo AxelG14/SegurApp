@@ -116,7 +116,7 @@ fun Inicio(navController: NavController) {
                     selected = false,
                     onClick = { navController.navigate(AppScreens.AllReportsScreen.route) },
                     icon = { Icon(Icons.Default.Place, contentDescription = null) },
-                    label = { Text("REPORTES") }
+                    label = { Text("ACCIDENTES") }
                 )
                 NavigationBarItem(
                     selected = false,
@@ -189,7 +189,7 @@ fun Inicio(navController: NavController) {
                         .width(300.dp),
                     border = BorderStroke(1.dp, Color.White)
                 ) {
-                    Text("CREAR REPORTE", fontWeight = FontWeight.Bold)
+                    Text("REPORTAR ACCIDENTE", fontWeight = FontWeight.Bold)
                 }
 
             }

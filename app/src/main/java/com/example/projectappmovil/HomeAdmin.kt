@@ -79,7 +79,7 @@ fun InicioAdmin(navController: NavController){
                     onClick = {navController.navigate(route = AppScreens.ReportsAdminScreen.route)},
                     selected = false,
                     icon = { Icon(imageVector = Icons.Default.Create, contentDescription = null) },
-                    label = { Text("REPORTES") }
+                    label = { Text("ACCIDENTES") }
                 )
                 NavigationBarItem(
                     onClick = {navController.navigate(route = AppScreens.ProfileAdminScreen.route)},

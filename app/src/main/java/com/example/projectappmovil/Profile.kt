@@ -115,7 +115,7 @@ fun Profile(navController: NavController) {
                     onClick = { navController.navigate(route = AppScreens.AllReportsScreen.route) },
                     selected = false,
                     icon = { Icon(imageVector = Icons.Default.Place, contentDescription = null) },
-                    label = { Text("REPORTES") }
+                    label = { Text("ACCIDENTES") }
                 )
                 NavigationBarItem(
                     onClick = { navController.navigate(route = AppScreens.MyReportsScreen.route) },
@@ -308,23 +308,7 @@ fun Profile(navController: NavController) {
                 Text(text = "ELIMINAR CUENTA")
 
             }
-            Button(
-                onClick = {
-                    if (user != null) {
-                        val id = user.uid
-                        profile.saveEmergencyUser(context, "emergency", id)
-                        profile.saveEmergencyUserName(context, "emergencyName", nombre)
-                        showDialog3 = true
-                    }
-                },
-                modifier = Modifier
-                    .fillMaxWidth(0.7f),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Gray
-                )
-            ) {
-                Text(text = "HABILITAR EMERGENCIA")
-            }
+//
             if (showDialog) {
                 AlertDialog(
                     onDismissRequest = { showDialog = false },
